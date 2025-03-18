@@ -1,0 +1,8 @@
+* elpas.kisaragi-hiu.com
+:PROPERTIES:
+:created:  2025-03-18T14:45:11+0900
+:END:
+
+Like MELPA's list, but for all packages.
+
+Browser interface for searching for Emacs packages.
