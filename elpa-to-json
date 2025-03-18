@@ -1,0 +1,62 @@
+#!/bin/sh
+":"; exec emacs --quick --script "$0" "$@" # -*-mode: lisp-interaction; lexical-binding: t-*-
+
+;;; Commentary:
+;; Write archive-contents out as JSON.
+
+;;; Code:
+
+(setq debug-on-error t)
+
+(defun json--print-list (list)
+  "Like `json-encode-list', but insert the JSON at point."
+  (with-temp-file "tmp"
+    (insert (format "%S" list)))
+  (cond ((json-alist-p list) (json--print-alist list))
+        ((json-plist-p list) (json--print-unordered-map list))
+        ((listp list)        (json--print-array list))
+        ((signal 'json-error (list list)))))
+
+(defun my/write-json-for-archive (archive)
+  "Convert archive-contents of ARCHIVE into JSON.
+ARCHIVE is a cons cell (NAME . URL), just like the values in `package-archives'."
+  (let* ((name (car archive))
+         (url (cdr archive))
+         (out-file (format "%s.json" name))
+         archive-content)
+    (with-current-buffer (url-retrieve-synchronously
+                          (format "%s/archive-contents" url))
+      (re-search-forward "^\r?\n\r?" nil t) ; skip headers
+      (setq archive-content (cdr (read (current-buffer)))))
+    (with-temp-file out-file
+      (cl-letf* ((print-alist-orig (symbol-function 'json--print-alist))
+                 (print-array-orig (symbol-function 'json--print-array))
+                 ((symbol-function 'json--print-array)
+                  ;; Some cons cell somewhere is being printed as an array
+                  (lambda (obj)
+                    (if (and (consp obj)
+                             (or (stringp (car obj))
+                                 (not (car obj)))
+                             (stringp (cdr obj)))
+                        (json--print-array (list (car obj) (cdr obj)))
+                      (funcall print-array-orig obj))))
+                 ((symbol-function 'json--print-alist)
+                  (lambda (obj)
+                    ;; Override for version lists
+                    (if (and (listp obj)
+                             (equal 1 (length obj))
+                             (ignore-errors
+                               (seq-every-p #'numberp (car obj))))
+                        (json--print-array obj)
+                      (funcall print-alist-orig obj)))))
+        (let ((json-encoding-pretty-print t))
+          (insert (json-encode archive-content)))))
+    (message "Written to %s" out-file)))
+(if (or (equal "-h" (car argv))
+        (equal "--help" (car argv))
+        (not (cadr argv))
+        (not (car argv)))
+    (message "Usage: <this file> <name> <url>")
+  (my/write-json-for-archive (cons (car argv) (cadr argv))))
+
+(setq argv nil)
