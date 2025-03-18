@@ -47,7 +47,7 @@ ARCHIVE is a cons cell (NAME . URL), just like the values in `package-archives'.
                              (equal 1 (length obj))
                              (ignore-errors
                                (seq-every-p #'numberp (car obj))))
-                        (json--print-array obj)
+                        (json--print-array (car obj))
                       (funcall print-alist-orig obj)))))
         (let ((json-encoding-pretty-print t))
           (insert (json-encode archive-content)))))
