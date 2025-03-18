@@ -8,6 +8,7 @@ const versionList = z.array(z.number());
 const deps = z.record(versionList);
 const summary = z.string();
 const keywords = z.array(z.string());
+const people = z.union([z.array(z.string()), z.record(z.string())]);
 const elpaPackageKind = z.enum(["tar", "single"]);
 
 export const elpaConvertedJson = z.record(
@@ -19,8 +20,8 @@ export const elpaConvertedJson = z.record(
     z.object({
       url: z.string().url(),
       keywords: z.optional(keywords),
-      maintainer: z.optional(z.record(z.string())),
-      authors: z.optional(z.record(z.string())),
+      maintainer: z.optional(people),
+      authors: z.optional(people),
       commit: z.optional(z.string()),
     }),
   ])
@@ -51,6 +52,13 @@ export const melpaArchiveJson = z.record(
               );
               return val.slice(2);
             })
+            .transform((val) => {
+              if (!val.startsWith("htts://")) return val;
+              console.log(
+                `Warning: ${val} misspelled https. Automatically fixing...`
+              );
+              return "https://" + val.slice(7);
+            })
             // A few packages specify URL without protocol, as bare URLs. This
             // would otherwise be fine but Zod's URL validator doesn't accept
             // it, for good reason.
@@ -65,9 +73,37 @@ export const melpaArchiveJson = z.record(
             .refine((val) => z.string().url().safeParse(val).success),
         ])
       ),
-      commit: z.string(),
+      commit: z.optional(z.string()),
       revdesc: z.optional(z.string()),
       keywords: z.optional(keywords),
+      // For converting elpa to the same format without losing info
+      maintainer: z.optional(people),
+      authors: z.optional(people),
     }),
   })
 );
+
+type ElpaConvertedJson = z.infer<typeof elpaConvertedJson>;
+type MelpaArchiveJson = z.infer<typeof melpaArchiveJson>;
+
+function elpaToMelpaIsh(elpa: ElpaConvertedJson) {
+  const ret: MelpaArchiveJson = {};
+  for (const [pkg, [version, deps, desc, kind, props]] of Object.entries(
+    elpa
+  )) {
+    ret[pkg] = {
+      ver: version,
+      type: kind,
+      deps: deps,
+      desc: desc,
+      props: {
+        url: props.url,
+        keywords: props.keywords,
+        commit: props.commit,
+        maintainer: props.maintainer,
+        authors: props.authors,
+      },
+    };
+  }
+  return ret;
+}
