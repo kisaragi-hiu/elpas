@@ -29,12 +29,13 @@ ARCHIVE is a cons cell (NAME . URL), just like the values in `package-archives'.
                  (print-array-orig (symbol-function 'json--print-array))
                  ((symbol-function 'json--print-array)
                   ;; Some cons cell somewhere is being printed as an array
+                  ;; This is only really caught in the maintainer list
                   (lambda (obj)
                     (if (and (consp obj)
                              (or (stringp (car obj))
                                  (not (car obj)))
                              (stringp (cdr obj)))
-                        (json--print-array (list (car obj) (cdr obj)))
+                        (json--print-map (list (cons (car obj) (cdr obj))))
                       (funcall print-array-orig obj))))
                  ((symbol-function 'json--print-alist)
                   (lambda (obj)

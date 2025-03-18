@@ -19,7 +19,7 @@ export const elpaConvertedJson = z.record(
     z.object({
       url: z.string().url(),
       keywords: z.optional(keywords),
-      maintainer: z.optional(z.tuple([z.string().nullable(), z.string()])),
+      maintainer: z.optional(z.record(z.string())),
       authors: z.optional(z.record(z.string())),
       commit: z.optional(z.string()),
     }),
