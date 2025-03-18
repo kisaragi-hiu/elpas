@@ -10,15 +10,6 @@
 
 (setq debug-on-error t)
 
-(defun json--print-list (list)
-  "Like `json-encode-list', but insert the JSON at point."
-  (with-temp-file "tmp"
-    (insert (format "%S" list)))
-  (cond ((json-alist-p list) (json--print-alist list))
-        ((json-plist-p list) (json--print-unordered-map list))
-        ((listp list)        (json--print-array list))
-        ((signal 'json-error (list list)))))
-
 (defun my/write-json-for-archive (archive)
   "Convert archive-contents of ARCHIVE into JSON.
 ARCHIVE is a cons cell (NAME . URL), just like the values in `package-archives'."
