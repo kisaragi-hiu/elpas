@@ -6,6 +6,8 @@
 
 ;;; Code:
 
+(require 'url-handlers)
+
 (setq debug-on-error t)
 
 (defun json--print-list (list)
@@ -24,10 +26,13 @@ ARCHIVE is a cons cell (NAME . URL), just like the values in `package-archives'.
          (url (cdr archive))
          (out-file (format "%s.json" name))
          archive-content)
-    (with-current-buffer (url-retrieve-synchronously
-                          (format "%s/archive-contents" url))
-      (re-search-forward "^\r?\n\r?" nil t) ; skip headers
-      (setq archive-content (cdr (read (current-buffer)))))
+    (let ((buf (url-retrieve-synchronously
+                (format "%s/archive-contents" url))))
+      (with-temp-buffer
+        ;; insert body from `buf' into the current buffer
+        (url-insert buf)
+        (decode-coding-region (point-min) (point-max) 'utf-8)
+        (setq archive-content (cdr (read (buffer-string))))))
     (with-temp-file out-file
       (cl-letf* ((print-alist-orig (symbol-function 'json--print-alist))
                  (print-array-orig (symbol-function 'json--print-array))
