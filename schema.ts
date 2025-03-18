@@ -8,6 +8,8 @@ const versionList = z.array(z.number());
 const deps = z.record(versionList);
 const elpaPackageKind = z.enum(["tar", "single"]);
 
+export const melpaDownloadCountsJson = z.record(z.number().int());
+
 export const melpaArchiveJson = z.record(
   z.object({
     ver: versionList,
