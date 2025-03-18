@@ -1,4 +1,9 @@
-import { melpaArchiveJson, melpaDownloadCountsJson } from "./schema.ts";
+import {
+  melpaArchiveJson,
+  melpaDownloadCountsJson,
+  elpaConvertedJson,
+} from "./schema.ts";
+import { readFileSync } from "node:fs";
 
 async function getJson(url: string) {
   const response = await fetch(url);
@@ -16,4 +21,7 @@ export const melpaArchive = melpaArchiveJson.parse(
 );
 export const melpaDownloads = melpaDownloadCountsJson.parse(
   await getJson("https://melpa.org/download_counts.json")
+);
+export const gnuElpa = elpaConvertedJson.parse(
+  JSON.parse(readFileSync("./gnu.json", { encoding: "utf-8" }))
 );

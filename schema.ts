@@ -6,7 +6,25 @@ const versionList = z.array(z.number());
  * Dependency alist as used by both archive-contents and MELPA's archive.json
  */
 const deps = z.record(versionList);
+const summary = z.string();
+const keywords = z.array(z.string());
 const elpaPackageKind = z.enum(["tar", "single"]);
+
+export const elpaConvertedJson = z.record(
+  z.tuple([
+    versionList,
+    deps.nullable(),
+    summary,
+    elpaPackageKind,
+    z.object({
+      url: z.string().url(),
+      keywords: z.optional(keywords),
+      maintainer: z.optional(z.tuple([z.string().nullable(), z.string()])),
+      authors: z.optional(z.record(z.string())),
+      commit: z.optional(z.string()),
+    }),
+  ])
+);
 
 export const melpaDownloadCountsJson = z.record(z.number().int());
 
@@ -49,7 +67,7 @@ export const melpaArchiveJson = z.record(
       ),
       commit: z.string(),
       revdesc: z.optional(z.string()),
-      keywords: z.optional(z.array(z.string())),
+      keywords: z.optional(keywords),
     }),
   })
 );
