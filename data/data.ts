@@ -37,10 +37,11 @@ async function getJson(url: string, cachePath?: string) {
     } catch {}
   }
   const response = await fetch(url);
+  const text = await response.text();
   if (cachePath) {
-    writeFileSync(cachePath, await response.text());
+    writeFileSync(cachePath, text);
   }
-  return await response.json();
+  return JSON.parse(text);
 }
 
 // MELPA has 3 files: archive.json, recipes.json, and download_counts.json.
