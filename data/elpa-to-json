@@ -10,13 +10,11 @@
 
 (setq debug-on-error t)
 
-(defun my/write-json-for-archive (archive)
-  "Convert archive-contents of ARCHIVE into JSON.
-ARCHIVE is a cons cell (NAME . URL), just like the values in `package-archives'."
-  (let* ((name (car archive))
-         (url (cdr archive))
-         (out-file (format "%s.json" name))
-         archive-content)
+(defun my/write-json-for-archive (url out-file)
+  "Convert archive-contents of an archive at URL into JSON.
+URL is the same archive URL that would go into `package-archives'.
+If OUT-FILE is nil, print to stdout instead."
+  (let* (archive-content)
     (let ((buf (url-retrieve-synchronously
                 (format "%s/archive-contents" url))))
       (with-temp-buffer
@@ -24,7 +22,7 @@ ARCHIVE is a cons cell (NAME . URL), just like the values in `package-archives'.
         (url-insert buf)
         (decode-coding-region (point-min) (point-max) 'utf-8)
         (setq archive-content (cdr (read (buffer-string))))))
-    (with-temp-file out-file
+    (with-temp-buffer
       (cl-letf* ((print-alist-orig (symbol-function 'json--print-alist))
                  (print-array-orig (symbol-function 'json--print-array))
                  ((symbol-function 'json--print-array)
@@ -47,13 +45,23 @@ ARCHIVE is a cons cell (NAME . URL), just like the values in `package-archives'.
                         (json--print-array (car obj))
                       (funcall print-alist-orig obj)))))
         (let ((json-encoding-pretty-print t))
-          (insert (json-encode archive-content)))))
+          (insert (json-encode archive-content)))
+        ;; START = nil: write everything; END is ignored in this case
+        ;; FILENAME is OUT-FILE
+        ;; Don't use append mode; VISIT is not t or nil or a string
+        ;; This is the same way it's called as within `with-temp-file'.
+        (if out-file
+            (write-region nil nil out-file nil 0)
+          (princ (buffer-string)))))
     (message "Written to %s" out-file)))
 (if (or (equal "-h" (car argv))
         (equal "--help" (car argv))
         (not (cadr argv))
         (not (car argv)))
-    (message "Usage: <this file> <name> <url>")
-  (my/write-json-for-archive (cons (car argv) (cadr argv))))
+    (message "Usage: <this file> <outfile> <url>
+<outfile> can be \"-\", which means stdout.")
+  (let ((url (cadr argv))
+        (file (car argv)))
+    (my/write-json-for-archive url file)))
 
 (setq argv nil)
