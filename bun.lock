@@ -5,6 +5,7 @@
       "name": "elpas",
       "dependencies": {
         "zod": "^3.24.2",
+        "zx": "^8.4.1",
       },
       "devDependencies": {
         "@types/bun": "latest",
@@ -23,5 +24,7 @@
     "undici-types": ["undici-types@6.20.0", "", {}, "sha512-Ny6QZ2Nju20vw1SRHe3d9jVu6gJ+4e3+MMpqu7pqE5HT6WsTSlce++GQmK5UXS8mzV8DSYHrQH+Xrf2jVcuKNg=="],
 
     "zod": ["zod@3.24.2", "", {}, "sha512-lY7CDW43ECgW9u1TcT3IoXHflywfVqDYze4waEz812jR/bZ8FHDsl7pFQoSZTz5N+2NqRXs8GBwnAwo3ZNxqhQ=="],
+
+    "zx": ["zx@8.4.1", "", { "bin": { "zx": "build/cli.js" } }, "sha512-1Cb+Tfwt/daKV6wckBeDbB6h3IMauqj9KWp+EcbYzi9doeJeIHCktxp/yWspXOXRdoUzBCQSKoUgm3g8r9fz5A=="],
   }
 }
