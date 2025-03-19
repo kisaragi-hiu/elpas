@@ -50,7 +50,7 @@ If OUT-FILE is nil, print to stdout instead."
         ;; FILENAME is OUT-FILE
         ;; Don't use append mode; VISIT is not t or nil or a string
         ;; This is the same way it's called as within `with-temp-file'.
-        (if out-file
+        (if (and out-file (not (equal out-file "-")))
             (write-region nil nil out-file nil 0)
           (princ (buffer-string)))))
     (message "Written to %s" out-file)))
