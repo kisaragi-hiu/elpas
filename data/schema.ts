@@ -8,7 +8,20 @@ const versionList = z.array(z.number());
 const deps = z.record(versionList);
 const summary = z.string();
 const keywords = z.array(z.string());
-const people = z.union([z.array(z.string()), z.record(z.string())]);
+const people = z.union([
+  z.array(z.string()),
+  // Accept name -> email maps but convert them to string arrays
+  z.record(z.string(), z.string().nullable()).transform((obj) => {
+    let out = [];
+    for (const [k, v] of Object.entries(obj)) {
+      if (v) {
+        out.push(`${k} <${v}>`);
+      } else {
+        out.push(k);
+      }
+    }
+  }),
+]);
 const elpaPackageKind = z.enum(["tar", "single"]);
 
 export const elpaConvertedJson = z.record(
@@ -76,8 +89,7 @@ export const melpaArchiveJson = z.record(
       commit: z.optional(z.string()),
       revdesc: z.optional(z.string()),
       keywords: z.optional(keywords),
-      // For converting elpa to the same format without losing info
-      maintainer: z.optional(people),
+      maintainers: z.optional(people),
       authors: z.optional(people),
     }),
   })
@@ -100,7 +112,7 @@ function elpaToMelpaIsh(elpa: ElpaConvertedJson) {
         url: props.url,
         keywords: props.keywords,
         commit: props.commit,
-        maintainer: props.maintainer,
+        maintainers: props.maintainer,
         authors: props.authors,
       },
     };
