@@ -1,13 +1,16 @@
-all: gnu.json nongnu.json org.json jcs.json
+combined.json:
+	deno -A data.ts
 
-gnu.json:
-	sh ./elpa-to-json gnu.json "https://elpa.gnu.org/packages/"
+json: cache/gnu.json cache/nongnu.json cache/org.json cache/jcs.json
 
-nongnu.json:
-	sh ./elpa-to-json nongnu.json "https://elpa.nongnu.org/nongnu/"
+cache/gnu.json:
+	sh ./elpa-to-json cache/gnu.json "https://elpa.gnu.org/packages/"
 
-org.json:
-	sh ./elpa-to-json org.json "https://orgmode.org/elpa/"
+cache/nongnu.json:
+	sh ./elpa-to-json cache/nongnu.json "https://elpa.nongnu.org/nongnu/"
 
-jcs.json:
-	sh ./elpa-to-json jcs-elpa.json "https://jcs-emacs.github.io/jcs-elpa/packages/"
+cache/org.json:
+	sh ./elpa-to-json cache/org.json "https://orgmode.org/elpa/"
+
+cache/jcs.json:
+	sh ./elpa-to-json cache/jcs-elpa.json "https://jcs-emacs.github.io/jcs-elpa/packages/"

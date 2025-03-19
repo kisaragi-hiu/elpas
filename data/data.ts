@@ -3,20 +3,21 @@ import {
   melpaDownloadCountsJson,
   elpaConvertedJson,
 } from "./schema.ts";
-import { readFileSync, writeFileSync } from "node:fs";
+import type { Pkg } from "./schema.ts";
+import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { $ } from "zx";
 
 /**
  * Fetch ELPA archive-contents from `url`, convert it to JSON, then return the value.
  * The conversion step runs Emacs to do the job.
- * If `cachePath` is provided, try to read from it. Writing to it is not
+ * If `cacheName` is provided, try to read from it. Writing to it is not
  * supported yet.
  */
-async function getElpaJson(url: string, cachePath?: string) {
-  if (cachePath) {
+async function getElpaJson(url: string, cacheName?: string) {
+  if (cacheName) {
     try {
       return elpaConvertedJson.parse(
-        JSON.parse(readFileSync(cachePath, { encoding: "utf-8" }))
+        JSON.parse(readFileSync(`cache/${cacheName}`, { encoding: "utf-8" }))
       );
     } catch {}
   }
@@ -27,48 +28,121 @@ async function getElpaJson(url: string, cachePath?: string) {
 
 /**
  * Wrapper for `fetch` on `url`.
- * If `cachePath` is provided, try to read from it; and write to it if it
+ * If `cacheName` is provided, try to read from it; and write to it if it
  * doesn't exist.
  */
-async function getJson(url: string, cachePath?: string) {
-  if (cachePath) {
+async function getJson(url: string, cacheName?: string) {
+  if (cacheName) {
     try {
-      return JSON.parse(readFileSync(cachePath, { encoding: "utf-8" }));
+      return JSON.parse(
+        readFileSync(`cache/${cacheName}`, { encoding: "utf-8" })
+      );
     } catch {}
   }
   const response = await fetch(url);
   const text = await response.text();
-  if (cachePath) {
-    writeFileSync(cachePath, text);
+  if (cacheName) {
+    mkdirSync("cache", { recursive: true });
+    writeFileSync(`cache/${cacheName}`, text);
   }
   return JSON.parse(text);
 }
 
-// MELPA has 3 files: archive.json, recipes.json, and download_counts.json.
-// - archive.json has most of the info we need.
-// - recipes.json has the raw recipes, which includes the fetcher name and
-//   repository (if applicable) and file paths. The fetching information is
-//   already in URL within archive.json, and we don't need the file paths.
-// - download_counts.json is as the name says. It is an object of names to numbers.
-export const melpaArchive = melpaArchiveJson.parse(
-  await getJson("https://melpa.org/archive.json", "melpa-archive.json")
-);
-export const melpaDownloads = melpaDownloadCountsJson.parse(
-  await getJson(
-    "https://melpa.org/download_counts.json",
-    "melpa-download-counts.json"
-  )
-);
-export const gnu = await getElpaJson(
-  "https://elpa.gnu.org/packages/",
-  "gnu.json"
-);
-export const nongnu = await getElpaJson(
-  "https://elpa.nongnu.org/nongnu/",
-  "nongnu.json"
-);
-export const org = await getElpaJson("https://orgmode.org/elpa/", "org.json");
-export const jcs = await getElpaJson(
-  "https://jcs-emacs.github.io/jcs-elpa/packages/",
-  "jcs-elpa.json"
-);
+const melpas = {
+  melpa: {
+    // MELPA has 3 files: archive.json, recipes.json, and download_counts.json.
+    // - archive.json has most of the info we need.
+    // - recipes.json has the raw recipes, which includes the fetcher name and
+    //   repository (if applicable) and file paths. The fetching information is
+    //   already in URL within archive.json, and we don't need the file paths.
+    // - download_counts.json is as the name says. It is an object of names to numbers.
+    archive: melpaArchiveJson.parse(
+      await getJson("https://melpa.org/archive.json", "melpa-archive.json")
+    ),
+    downloads: melpaDownloadCountsJson.parse(
+      await getJson(
+        "https://melpa.org/download_counts.json",
+        "melpa-download-counts.json"
+      )
+    ),
+  },
+  melpaStable: {
+    // MELPA has 3 files: archive.json, recipes.json, and download_counts.json.
+    // - archive.json has most of the info we need.
+    // - recipes.json has the raw recipes, which includes the fetcher name and
+    //   repository (if applicable) and file paths. The fetching information is
+    //   already in URL within archive.json, and we don't need the file paths.
+    // - download_counts.json is as the name says. It is an object of names to numbers.
+    archive: melpaArchiveJson.parse(
+      await getJson(
+        "https://stable.melpa.org/archive.json",
+        "melpa-stable-archive.json"
+      )
+    ),
+    downloads: melpaDownloadCountsJson.parse(
+      await getJson(
+        "https://stable.melpa.org/download_counts.json",
+        "melpa-stable-download-counts.json"
+      )
+    ),
+  },
+};
+
+const elpas = {
+  gnu: await getElpaJson("https://elpa.gnu.org/packages/", "gnu.json"),
+  nongnu: await getElpaJson("https://elpa.nongnu.org/nongnu/", "nongnu.json"),
+  org: await getElpaJson("https://orgmode.org/elpa/", "org.json"),
+  jcs: await getElpaJson(
+    "https://jcs-emacs.github.io/jcs-elpa/packages/",
+    "jcs-elpa.json"
+  ),
+};
+
+const packages: Pkg[] = [];
+
+for (const [archiveName, pkgs] of Object.entries(elpas)) {
+  for (const [pkgName, [version, deps, desc, _kind, props]] of Object.entries(
+    pkgs
+  )) {
+    const newPkg: Pkg = {
+      name: pkgName,
+      source: archiveName,
+      ver: version,
+      deps: deps,
+      summary: desc,
+    };
+    // Not misspell, the input is always singular while we want output to be plural
+    if (props?.maintainer) newPkg.maintainers = props.maintainer;
+    if (props?.authors) newPkg.authors = props.authors;
+    if (props?.keywords) newPkg.keywords = props.keywords;
+    if (props?.commit) newPkg.commit = props.commit;
+    if (props?.url) newPkg.url = props.url;
+
+    packages.push(newPkg);
+  }
+}
+
+for (const [archiveName, { archive, downloads }] of Object.entries(melpas)) {
+  for (const [pkgName, { ver, deps, desc, props }] of Object.entries(archive)) {
+    const newPkg: Pkg = {
+      name: pkgName,
+      source: archiveName,
+      ver: ver,
+      deps: deps,
+      summary: desc,
+    };
+    if (downloads[pkgName]) {
+      newPkg.downloads = downloads[pkgName];
+    }
+    if (props.maintainers) newPkg.maintainers = props.maintainers;
+    if (props.authors) newPkg.authors = props.authors;
+    if (props.keywords) newPkg.keywords = props.keywords;
+    if (props.commit) newPkg.commit = props.commit;
+    // throwing away revdesc
+    if (props.url) newPkg.url = props.url;
+
+    packages.push(newPkg);
+  }
+}
+
+writeFileSync("combined.json", JSON.stringify(packages, null, 1));

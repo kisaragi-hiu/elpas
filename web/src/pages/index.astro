@@ -1,0 +1,17 @@
+---
+import Layout from "$l/Layout.astro";
+
+import { pkgs } from "$data/schema.ts";
+import combinedRaw from "$data/combined.json";
+const combined = pkgs.parse(combinedRaw);
+---
+
+<Layout>
+  <section>
+    <p>ELPAs list</p>
+    <p>A listing of multiple ELPAs.</p>
+  </section>
+  <main>
+    {packages.map((pkg) => <div>{pkg}</div>)}
+  </main>
+</Layout>
