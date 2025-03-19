@@ -6,7 +6,6 @@
     "@types/bun": "latest"
   },
   "dependencies": {
-    "arktype": "^2.1.9",
     "zod": "^3.24.2"
   }
 }
