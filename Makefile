@@ -1,2 +1,2 @@
 json:
-	cd data && $(MAKE) all
+	cd data && $(MAKE) combined.json
