@@ -25,20 +25,23 @@ const people = z.union([
 const elpaPackageKind = z.enum(["tar", "single"]);
 
 export const elpaConvertedJson = z.record(
-  z.tuple([
-    versionList,
-    deps.nullable(),
-    summary,
-    elpaPackageKind,
-    z.optional(
+  z.union([
+    // Tuples cannot have optional elements. This is the workaround.
+    // https://github.com/colinhacks/zod/issues/149
+    z.tuple([versionList, deps.nullable(), summary, elpaPackageKind]),
+    z.tuple([
+      versionList,
+      deps.nullable(),
+      summary,
+      elpaPackageKind,
       z.object({
         url: z.string().url(),
         keywords: z.optional(keywords),
         maintainer: z.optional(people),
         authors: z.optional(people),
         commit: z.optional(z.string()),
-      })
-    ),
+      }),
+    ]),
   ])
 );
 
@@ -110,14 +113,17 @@ function elpaToMelpaIsh(elpa: ElpaConvertedJson) {
       type: kind,
       deps: deps,
       desc: desc,
-      props: {
+      props: {},
+    };
+    if (props) {
+      ret[pkg].props = {
         url: props.url,
         keywords: props.keywords,
         commit: props.commit,
         maintainers: props.maintainer,
         authors: props.authors,
-      },
-    };
+      };
+    }
   }
   return ret;
 }
