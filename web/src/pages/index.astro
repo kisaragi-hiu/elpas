@@ -12,6 +12,6 @@ const combined = pkgs.parse(combinedRaw);
     <p>A listing of multiple ELPAs.</p>
   </section>
   <main>
-    {packages.map((pkg) => <div>{pkg}</div>)}
+    {combined.map((pkg) => <div>{pkg}</div>)}
   </main>
 </Layout>

@@ -112,7 +112,7 @@ const pkg = z.object({
   authors: z.optional(z.array(z.string())),
   keywords: z.optional(z.array(z.string())),
   commit: z.optional(z.string()),
-  url: z.optional(z.string().url()),
+  url: z.optional(url),
 });
 
 export type Pkg = z.infer<typeof pkg>;
