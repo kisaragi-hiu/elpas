@@ -30,13 +30,15 @@ export const elpaConvertedJson = z.record(
     deps.nullable(),
     summary,
     elpaPackageKind,
-    z.object({
-      url: z.string().url(),
-      keywords: z.optional(keywords),
-      maintainer: z.optional(people),
-      authors: z.optional(people),
-      commit: z.optional(z.string()),
-    }),
+    z.optional(
+      z.object({
+        url: z.string().url(),
+        keywords: z.optional(keywords),
+        maintainer: z.optional(people),
+        authors: z.optional(people),
+        commit: z.optional(z.string()),
+      })
+    ),
   ])
 );
 
