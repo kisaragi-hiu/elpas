@@ -1,5 +1,7 @@
 ---
 import Layout from "$l/Layout.astro";
+import PaginatedTable from "$c/PaginatedTable.vue";
+import { TablePagination } from "svelte-table-pagination";
 
 import { pkgs } from "$data/schema.ts";
 import combinedRaw from "$data/combined.json";
@@ -12,6 +14,15 @@ const combined = pkgs.parse(combinedRaw);
     <p>A listing of multiple ELPAs.</p>
   </section>
   <main>
-    {combined.map((pkg) => <div>{pkg}</div>)}
+    <!-- <PaginatedTable data={combined} client:load /> -->
+    <TablePagination
+      client:load
+      tableColumns={["name", "source", "ver", "summary", "downloads"]}
+      searchableColumns={[true, true, false, true, false]}
+      sortableColumns={[true, true, true, true, true]}
+      isActionColumns={[false, false, false, false, false]}
+      actionsHtml={[[], [], [], [], []]}
+      tableBody={combined}
+    />
   </main>
 </Layout>
