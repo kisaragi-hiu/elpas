@@ -14,8 +14,8 @@ const combined = pkgs.parse(combinedRaw);
     <p>A listing of multiple ELPAs.</p>
   </section>
   <main>
-    <!-- <PaginatedTable data={combined} client:load /> -->
-    <TablePagination
+    <PaginatedTable data={combined} client:load />
+    <!-- <TablePagination
       client:load
       tableColumns={["name", "source", "ver", "summary", "downloads"]}
       searchableColumns={[true, true, false, true, false]}
@@ -24,5 +24,6 @@ const combined = pkgs.parse(combinedRaw);
       actionsHtml={[[], [], [], [], []]}
       tableBody={combined}
     />
+  </main> -->
   </main>
 </Layout>
