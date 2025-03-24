@@ -1,12 +1,12 @@
 // @ts-check
 import { defineConfig } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
-import vue from "@astrojs/vue";
-
 import svelte from "@astrojs/svelte";
 
+import react from "@astrojs/react";
+
 export default defineConfig({
-  integrations: [vue(), svelte()],
+  integrations: [svelte(), react()],
   vite: {
     clearScreen: false,
     plugins: [tailwindcss()],
