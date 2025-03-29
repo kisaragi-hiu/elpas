@@ -6,13 +6,7 @@ import svelte from "@astrojs/svelte";
 import react from "@astrojs/react";
 
 export default defineConfig({
-  integrations: [
-    svelte(),
-    react({
-      // reload on save breaks without this ¯\_(ツ)_/¯
-      experimentalDisableStreaming: true,
-    }),
-  ],
+  integrations: [svelte(), react()],
   vite: {
     clearScreen: false,
     plugins: [tailwindcss()],

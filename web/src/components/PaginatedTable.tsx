@@ -88,7 +88,13 @@ function getCellClass(colid: string) {
   return "pr-2";
 }
 
-export default ({ data, pageSize }: { data: Pkg[]; pageSize: number }) => {
+export default function PaginatedTable({
+  data,
+  pageSize,
+}: {
+  data: Pkg[];
+  pageSize: number;
+}) {
   const archives = useMemo(() => {
     const archiveSet = new Set<string>();
     for (const row of data) {
@@ -208,4 +214,4 @@ export default ({ data, pageSize }: { data: Pkg[]; pageSize: number }) => {
       </table>
     </div>
   );
-};
+}
