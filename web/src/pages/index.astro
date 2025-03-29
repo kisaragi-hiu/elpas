@@ -9,11 +9,11 @@ const combined = pkgs.parse(combinedRaw);
 ---
 
 <Layout>
-  <section>
+  <section class="mx-auto mt-16 w-[95%] max-w-5xl">
     <p>ELPAs list</p>
     <p>A listing of multiple ELPAs.</p>
   </section>
-  <main>
+  <main class="mx-auto mt-4 w-[95%] max-w-5xl">
     <PaginatedTable data={combined} client:load />
     <!-- <TablePagination
       client:load
