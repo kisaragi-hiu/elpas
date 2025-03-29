@@ -145,4 +145,7 @@ for (const [archiveName, { archive, downloads }] of Object.entries(melpas)) {
   }
 }
 
-writeFileSync("combined.json", JSON.stringify(packages, null, 1));
+writeFileSync(
+  "combined.json",
+  JSON.stringify({ collectedDate: new Date(), packages: packages }, null, 1)
+);

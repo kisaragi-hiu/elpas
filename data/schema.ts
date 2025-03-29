@@ -117,4 +117,7 @@ const pkg = z.object({
 });
 
 export type Pkg = z.infer<typeof pkg>;
-export const pkgs = z.array(pkg);
+export const combined = z.object({
+  collectedDate: z.coerce.date(),
+  packages: z.array(pkg),
+});

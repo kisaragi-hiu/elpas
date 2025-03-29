@@ -3,9 +3,9 @@ import Layout from "$l/Layout.astro";
 import PaginatedTable from "$c/PaginatedTable.tsx";
 import { TablePagination } from "svelte-table-pagination";
 
-import { pkgs } from "$data/schema.ts";
+import { combined } from "$data/schema.ts";
 import combinedRaw from "$data/combined.json";
-const combined = pkgs.parse(combinedRaw);
+const { collectedDate, packages } = combined.parse(combinedRaw);
 ---
 
 <Layout>
@@ -14,7 +14,7 @@ const combined = pkgs.parse(combinedRaw);
     <p>A listing of multiple ELPAs.</p>
   </section>
   <main class="mx-auto mt-4 w-[95%] max-w-5xl">
-    <PaginatedTable data={combined} pageSize={100} client:load />
+    <PaginatedTable data={packages} pageSize={100} client:load />
     <!-- <TablePagination
       client:load
       tableColumns={["name", "archive", "ver", "summary", "downloads"]}
