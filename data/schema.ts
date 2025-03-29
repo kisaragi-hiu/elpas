@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 const versionList = z.array(z.number());
+export type VersionList = z.infer<typeof versionList>;
 
 /**
  * Dependency alist as used by both archive-contents and MELPA's archive.json

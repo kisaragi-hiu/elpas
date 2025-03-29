@@ -18,12 +18,14 @@ import {
   type PaginationState,
 } from "@tanstack/react-table";
 import type { Pkg } from "$data/schema.ts";
+import { versionListEqual, versionListLessThan } from "$data/versionList.ts";
 import { useState } from "react";
 
 const columnHelper = createColumnHelper<Pkg>();
 const columns = [
   columnHelper.accessor("name", {
     cell: (info) => info.getValue(),
+    // Put numbers on top, like the MELPA list
     sortingFn: sortingFns.basic,
   }),
   columnHelper.accessor("summary", {
@@ -31,6 +33,17 @@ const columns = [
   }),
   columnHelper.accessor("ver", {
     cell: (info) => info.getValue().join("."),
+    sortingFn: (rowA, rowB) => {
+      const a = rowA.original.ver;
+      const b = rowB.original.ver;
+      if (versionListLessThan(a, b)) {
+        return -1;
+      } else if (versionListEqual(a, b)) {
+        return 0;
+      } else {
+        return 1;
+      }
+    },
   }),
   columnHelper.accessor("source", {
     cell: (info) => info.getValue(),
