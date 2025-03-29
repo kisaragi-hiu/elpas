@@ -1,6 +1,7 @@
 import {
   useReactTable,
   getCoreRowModel,
+  getSortedRowModel,
   getPaginationRowModel,
   flexRender,
   createColumnHelper,
@@ -14,6 +15,15 @@ import { useState } from "react";
 const columnHelper = createColumnHelper<Pkg>();
 const columns = [
   columnHelper.accessor("name", {
+    cell: (info) => info.getValue(),
+  }),
+  columnHelper.accessor("summary", {
+    cell: (info) => info.getValue(),
+  }),
+  columnHelper.accessor("ver", {
+    cell: (info) => info.getValue().join("."),
+  }),
+  columnHelper.accessor("source", {
     cell: (info) => info.getValue(),
   }),
 ];
@@ -47,9 +57,15 @@ export default ({ data }: { data: Pkg[] }) => {
     data: data,
     columns: columns,
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    enableSorting: true,
+    enableSortingRemoval: false,
     onPaginationChange: setPagination,
     state: { pagination: pagination },
+    initialState: {
+      sorting: [{ id: "name", desc: true }],
+    },
   });
   return (
     <table className="text-sm">
