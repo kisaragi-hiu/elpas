@@ -34,6 +34,7 @@ const columns = [
   }),
   columnHelper.accessor("ver", {
     cell: (info) => info.getValue().join("."),
+    header: () => "version",
     enableGlobalFilter: false,
     sortingFn: (rowA, rowB) => {
       const a = rowA.original.ver;
