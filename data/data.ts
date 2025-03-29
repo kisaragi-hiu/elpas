@@ -106,7 +106,7 @@ for (const [archiveName, pkgs] of Object.entries(elpas)) {
   )) {
     const newPkg: Pkg = {
       name: pkgName,
-      source: archiveName,
+      archive: archiveName,
       ver: version,
       deps: deps,
       summary: desc,
@@ -126,7 +126,7 @@ for (const [archiveName, { archive, downloads }] of Object.entries(melpas)) {
   for (const [pkgName, { ver, deps, desc, props }] of Object.entries(archive)) {
     const newPkg: Pkg = {
       name: pkgName,
-      source: archiveName,
+      archive: archiveName,
       ver: ver,
       deps: deps,
       summary: desc,

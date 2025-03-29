@@ -104,7 +104,7 @@ type MelpaArchiveJson = z.infer<typeof melpaArchiveJson>;
 
 const pkg = z.object({
   name: z.string(),
-  source: z.string(),
+  archive: z.string(),
   ver: versionList,
   deps: z.union([z.null(), deps]),
   summary: z.string(),

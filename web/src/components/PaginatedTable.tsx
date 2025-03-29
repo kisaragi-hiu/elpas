@@ -42,7 +42,7 @@ const columns = [
       return versionListLessThan(a, b) ? -1 : versionListEqual(a, b) ? 0 : 1;
     },
   }),
-  columnHelper.accessor("source", {
+  columnHelper.accessor("archive", {
     enableGlobalFilter: false,
     cell: (info) => info.getValue(),
   }),
@@ -73,8 +73,8 @@ function Header<TData, TValue>({ header }: { header: Header<TData, TValue> }) {
 }
 
 function getCellClass(colid: string) {
-  if (colid === "source") {
-    // 12ch to accomodate the longest source archive id, "melpa-stable". Ideally
+  if (colid === "archive") {
+    // 12ch to accomodate the longest archive id, "melpa-stable". Ideally
     // would be done automatically.
     return "pr-2 w-[12ch]";
   }
