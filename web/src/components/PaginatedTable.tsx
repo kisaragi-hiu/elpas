@@ -18,9 +18,10 @@ import {
   type PaginationState,
   getFilteredRowModel,
 } from "@tanstack/react-table";
+import useLocalStorageState from "use-local-storage-state";
 import type { Pkg } from "$data/schema.ts";
 import { versionListEqual, versionListLessThan } from "$data/versionList.ts";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 const columnHelper = createColumnHelper<Pkg>();
 const columns = [
@@ -88,6 +89,25 @@ function getCellClass(colid: string) {
 }
 
 export default ({ data, pageSize }: { data: Pkg[]; pageSize: number }) => {
+  const archives = useMemo(() => {
+    const archiveSet = new Set<string>();
+    for (const row of data) {
+      archiveSet.add(row.archive);
+    }
+    return [...archiveSet];
+  }, [data]);
+
+  const [
+    archiveFiltering,
+    setArchiveFiltering,
+    { removeItem: resetArchiveFiltering },
+  ] = useLocalStorageState("archiveFiltering", {
+    // FIXME: if I delete an archive that setting isn't cleaned up
+    defaultValue: Object.fromEntries(
+      archives.map((archive) => [archive, archive !== "melpa-stable"]),
+    ),
+  });
+
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: pageSize,
@@ -113,12 +133,38 @@ export default ({ data, pageSize }: { data: Pkg[]; pageSize: number }) => {
   });
   return (
     <div>
+      {import.meta.env.DEV && (import.meta.env.SSR ? "server" : "client")}
       <div>
         <input
           className="w-full border px-2 py-1"
           placeholder="Filter packages by name or summary..."
           onChange={(e) => table.setGlobalFilter(`${e.target.value}`)}
         ></input>
+        <div>
+          {true ? (
+            <div className="flex animate-pulse space-x-2">
+              <div className="h-2 w-2 rounded bg-gray-400"></div>
+              <div className="h-2 w-8 rounded bg-gray-400"></div>
+            </div>
+          ) : (
+            archives.map((archive) => (
+              <label key={archive} className="select-none">
+                <input
+                  type="checkbox"
+                  checked={archiveFiltering[archive]}
+                  onChange={(e) => {
+                    setArchiveFiltering({
+                      ...archiveFiltering,
+                      [archive]: e.target.checked,
+                    });
+                  }}
+                  className=""
+                ></input>
+                {archive}
+              </label>
+            ))
+          )}
+        </div>
       </div>
       <table className="mt-2 text-sm">
         <thead>
