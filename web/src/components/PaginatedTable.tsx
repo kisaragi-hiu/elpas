@@ -1,5 +1,5 @@
 // DONE: sorting buttons
-// TODO: filtering input, searching through name and summary
+// DONE: filtering input, searching through name and summary
 // TODO: link to source ELPA
 // TODO: link to package URL
 // TODO: pagination
@@ -22,6 +22,7 @@ import useLocalStorageState from "use-local-storage-state";
 import type { Pkg } from "$data/schema.ts";
 import { versionListEqual, versionListLessThan } from "$data/versionList.ts";
 import { useState, useMemo, useEffect } from "react";
+import clsx from "clsx";
 
 const columnHelper = createColumnHelper<Pkg>();
 const columns = [
@@ -42,11 +43,20 @@ const columns = [
       const b = rowB.original.ver;
       return versionListLessThan(a, b) ? -1 : versionListEqual(a, b) ? 0 : 1;
     },
+    meta: {
+      // 13ch to accomodate the longest version number strings: the MELPA style
+      // "20230102.1234" strings
+      extraClass: "w-[13ch]",
+    },
   }),
   columnHelper.accessor("archive", {
     enableGlobalFilter: false,
     cell: (info) => info.getValue(),
     filterFn: "equals",
+    meta: {
+      // 12ch to accomodate the longest archive id, "melpa-stable".
+      extraClass: "w-[12ch]",
+    },
   }),
 ];
 
@@ -72,21 +82,6 @@ function Header<TData, TValue>({ header }: { header: Header<TData, TValue> }) {
       <SortIndicator status={header.column.getIsSorted()} />
     </div>
   );
-}
-
-function getCellClass(colid: string) {
-  if (colid === "archive") {
-    // 12ch to accomodate the longest archive id, "melpa-stable". Ideally
-    // would be done automatically.
-    return "pr-2 w-[12ch]";
-  }
-  if (colid === "ver") {
-    // 13ch to accomodate the longest version number strings: the MELPA style
-    // "20230102.1234" strings
-    return "pr-2 w-[13ch]";
-  }
-
-  return "pr-2";
 }
 
 export default function PaginatedTable({
@@ -202,7 +197,14 @@ export default function PaginatedTable({
           {table.getRowModel().rows.map((row) => (
             <tr key={row.id}>
               {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className={getCellClass(cell.column.id)}>
+                <td
+                  key={cell.id}
+                  className={clsx(
+                    "pr-2",
+                    (cell.column.columnDef.meta as { extraClass?: string })
+                      ?.extraClass,
+                  )}
+                >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}
