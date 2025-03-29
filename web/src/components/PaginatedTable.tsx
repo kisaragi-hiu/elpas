@@ -21,7 +21,7 @@ import {
 import useLocalStorageState from "use-local-storage-state";
 import type { Pkg } from "$data/schema.ts";
 import { versionListEqual, versionListLessThan } from "$data/versionList.ts";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 
 const columnHelper = createColumnHelper<Pkg>();
 const columns = [
@@ -108,11 +108,18 @@ export default function PaginatedTable({
     setArchiveFiltering,
     { removeItem: resetArchiveFiltering },
   ] = useLocalStorageState("archiveFiltering", {
-    // FIXME: if I delete an archive that setting isn't cleaned up
     defaultValue: Object.fromEntries(
       archives.map((archive) => [archive, archive !== "melpa-stable"]),
     ),
   });
+  useEffect(() => {
+    if (Object.keys(archiveFiltering).length !== archives.length) {
+      console.log(
+        "localStorage archiveFiltering length mismatch, resetting filtering preferences",
+      );
+      resetArchiveFiltering();
+    }
+  }, [archiveFiltering, archives]);
 
   const [pagination, setPagination] = useState({
     pageIndex: 0,
