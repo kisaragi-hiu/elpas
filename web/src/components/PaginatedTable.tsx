@@ -52,12 +52,12 @@ export default ({ data }: { data: Pkg[] }) => {
     state: { pagination: pagination },
   });
   return (
-    <table>
+    <table className="text-sm">
       <thead>
         {table.getHeaderGroups().map((headerGroup) => (
           <tr key={headerGroup.id}>
             {headerGroup.headers.map((header) => (
-              <th key={header.id}>
+              <th key={header.id} className="text-left">
                 <Header header={header} />
               </th>
             ))}
@@ -68,7 +68,7 @@ export default ({ data }: { data: Pkg[] }) => {
         {table.getRowModel().rows.map((row) => (
           <tr key={row.id}>
             {row.getVisibleCells().map((cell) => (
-              <td key={cell.id}>
+              <td key={cell.id} className="pr-2">
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
               </td>
             ))}
