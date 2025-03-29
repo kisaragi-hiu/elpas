@@ -33,19 +33,15 @@ const columns = [
   }),
   columnHelper.accessor("ver", {
     cell: (info) => info.getValue().join("."),
+    enableGlobalFilter: false,
     sortingFn: (rowA, rowB) => {
       const a = rowA.original.ver;
       const b = rowB.original.ver;
-      if (versionListLessThan(a, b)) {
-        return -1;
-      } else if (versionListEqual(a, b)) {
-        return 0;
-      } else {
-        return 1;
-      }
+      return versionListLessThan(a, b) ? -1 : versionListEqual(a, b) ? 0 : 1;
     },
   }),
   columnHelper.accessor("source", {
+    enableGlobalFilter: false,
     cell: (info) => info.getValue(),
   }),
 ];
