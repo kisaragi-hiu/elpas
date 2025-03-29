@@ -14,7 +14,7 @@ const combined = pkgs.parse(combinedRaw);
     <p>A listing of multiple ELPAs.</p>
   </section>
   <main class="mx-auto mt-4 w-[95%] max-w-5xl">
-    <PaginatedTable data={combined} client:load />
+    <PaginatedTable data={combined} pageSize={100} client:load />
     <!-- <TablePagination
       client:load
       tableColumns={["name", "source", "ver", "summary", "downloads"]}

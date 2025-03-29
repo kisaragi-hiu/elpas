@@ -1,4 +1,4 @@
-// TODO: sorting buttons
+// DONE: sorting buttons
 // TODO: filtering input, searching through name and summary
 // TODO: link to source ELPA
 // TODO: link to package URL
@@ -12,6 +12,7 @@ import {
   getPaginationRowModel,
   flexRender,
   createColumnHelper,
+  sortingFns,
   type Header,
   type SortDirection,
   type PaginationState,
@@ -23,6 +24,7 @@ const columnHelper = createColumnHelper<Pkg>();
 const columns = [
   columnHelper.accessor("name", {
     cell: (info) => info.getValue(),
+    sortingFn: sortingFns.basic,
   }),
   columnHelper.accessor("summary", {
     cell: (info) => info.getValue(),
@@ -47,18 +49,22 @@ function SortIndicator({ status }: { status: SortDirection | false }) {
 
 function Header<TData, TValue>({ header }: { header: Header<TData, TValue> }) {
   if (header.isPlaceholder) return null;
+  const canSort = header.column.getCanSort();
   return (
-    <div>
+    <div
+      className={canSort ? "cursor-pointer select-none" : ""}
+      onClick={header.column.getToggleSortingHandler()}
+    >
       {flexRender(header.column.columnDef.header, header.getContext())}
       <SortIndicator status={header.column.getIsSorted()} />
     </div>
   );
 }
 
-export default ({ data }: { data: Pkg[] }) => {
+export default ({ data, pageSize }: { data: Pkg[]; pageSize: number }) => {
   const [pagination, setPagination] = useState({
     pageIndex: 0,
-    pageSize: 10,
+    pageSize: pageSize,
   } as PaginationState);
   const table = useReactTable({
     data: data,
@@ -71,7 +77,7 @@ export default ({ data }: { data: Pkg[] }) => {
     onPaginationChange: setPagination,
     state: { pagination: pagination },
     initialState: {
-      sorting: [{ id: "name", desc: true }],
+      sorting: [{ id: "name", desc: false }],
     },
   });
   return (
