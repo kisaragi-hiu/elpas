@@ -66,7 +66,7 @@ const melpas = {
       )
     ),
   },
-  melpaStable: {
+  "melpa-stable": {
     // MELPA has 3 files: archive.json, recipes.json, and download_counts.json.
     // - archive.json has most of the info we need.
     // - recipes.json has the raw recipes, which includes the fetcher name and
@@ -92,7 +92,7 @@ const elpas = {
   gnu: await getElpaJson("https://elpa.gnu.org/packages/", "gnu.json"),
   nongnu: await getElpaJson("https://elpa.nongnu.org/nongnu/", "nongnu.json"),
   org: await getElpaJson("https://orgmode.org/elpa/", "org.json"),
-  jcs: await getElpaJson(
+  "jcs-elpa": await getElpaJson(
     "https://jcs-emacs.github.io/jcs-elpa/packages/",
     "jcs-elpa.json"
   ),
