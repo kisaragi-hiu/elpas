@@ -16,6 +16,7 @@ import {
   type Header,
   type SortDirection,
   type PaginationState,
+  getFilteredRowModel,
 } from "@tanstack/react-table";
 import type { Pkg } from "$data/schema.ts";
 import { versionListEqual, versionListLessThan } from "$data/versionList.ts";
@@ -79,19 +80,31 @@ export default ({ data, pageSize }: { data: Pkg[]; pageSize: number }) => {
     data: data,
     columns: columns,
     getCoreRowModel: getCoreRowModel(),
+
     getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     enableSorting: true,
     enableSortingRemoval: false,
-    onPaginationChange: setPagination,
-    state: { pagination: pagination },
     initialState: {
       sorting: [{ id: "name", desc: false }],
     },
+
+    getPaginationRowModel: getPaginationRowModel(),
+    onPaginationChange: setPagination,
+    state: { pagination: pagination },
+
+    getFilteredRowModel: getFilteredRowModel(),
+    globalFilterFn: "includesString",
   });
   return (
     <div>
-      <table className="text-sm">
+      <div>
+        <input
+          className="w-full border p-1"
+          placeholder="Filter..."
+          onChange={(e) => table.setGlobalFilter(`${e.target.value}`)}
+        ></input>
+      </div>
+      <table className="mt-2 text-sm">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
