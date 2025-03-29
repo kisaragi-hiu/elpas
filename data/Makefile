@@ -1,7 +1,7 @@
-combined.json:
+combined.json: cache
 	deno -A data.ts
 
-json: cache/gnu.json cache/nongnu.json cache/org.json cache/jcs.json
+cache: cache/gnu.json cache/nongnu.json cache/org.json cache/jcs.json
 
 cache/gnu.json:
 	sh ./elpa-to-json cache/gnu.json "https://elpa.gnu.org/packages/"
