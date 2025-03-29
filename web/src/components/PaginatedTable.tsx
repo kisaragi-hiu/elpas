@@ -46,6 +46,7 @@ const columns = [
   columnHelper.accessor("archive", {
     enableGlobalFilter: false,
     cell: (info) => info.getValue(),
+    filterFn: "equals",
   }),
 ];
 
@@ -95,14 +96,15 @@ export default function PaginatedTable({
   data: Pkg[];
   pageSize: number;
 }) {
+  // Hook up archive filtering state
   const archives = useMemo(() => {
+    // FIXME: use provided column faceting features instead of this
     const archiveSet = new Set<string>();
     for (const row of data) {
       archiveSet.add(row.archive);
     }
     return [...archiveSet];
   }, [data]);
-
   const [
     archiveFiltering,
     setArchiveFiltering,
@@ -121,10 +123,15 @@ export default function PaginatedTable({
     }
   }, [archiveFiltering, archives]);
 
+  // Hook up pagination
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: pageSize,
   } as PaginationState);
+
+  const [globalFilterState, setGlobalFilterState] = useState("");
+
+  // Create the table instance
   const table = useReactTable({
     data: data,
     columns: columns,
@@ -139,18 +146,21 @@ export default function PaginatedTable({
 
     getPaginationRowModel: getPaginationRowModel(),
     onPaginationChange: setPagination,
-    state: { pagination: pagination },
 
     getFilteredRowModel: getFilteredRowModel(),
     globalFilterFn: "includesString",
+    onGlobalFilterChange: setGlobalFilterState,
+
+    state: { pagination, globalFilter: globalFilterState },
   });
+
   return (
     <div>
       <div>
         <input
           className="w-full border px-2 py-1"
           placeholder="Filter packages by name or summary..."
-          onChange={(e) => table.setGlobalFilter(`${e.target.value}`)}
+          onChange={(e) => setGlobalFilterState(`${e.target.value}`)}
         ></input>
         <div className="flex flex-wrap gap-2">
           {archives.map((archive) => (
@@ -170,6 +180,11 @@ export default function PaginatedTable({
             </label>
           ))}
         </div>
+      </div>
+      <div className="my-2">
+        {globalFilterState === ""
+          ? `${table.getPrePaginationRowModel().rows.length} entries`
+          : `${table.getPrePaginationRowModel().rows.length} matching entries`}
       </div>
       <table className="mt-2 text-sm">
         <thead>
