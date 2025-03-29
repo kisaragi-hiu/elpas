@@ -1,3 +1,10 @@
+// TODO: sorting buttons
+// TODO: filtering input, searching through name and summary
+// TODO: link to source ELPA
+// TODO: link to package URL
+// TODO: pagination
+// TODO: enable/disable archives, keep melpa stable disabled by default
+
 import {
   useReactTable,
   getCoreRowModel,
