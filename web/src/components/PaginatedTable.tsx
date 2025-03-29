@@ -71,6 +71,21 @@ function Header<TData, TValue>({ header }: { header: Header<TData, TValue> }) {
   );
 }
 
+function getCellClass(colid: string) {
+  if (colid === "source") {
+    // 12ch to accomodate the longest source archive id, "melpa-stable". Ideally
+    // would be done automatically.
+    return "pr-2 w-[12ch]";
+  }
+  if (colid === "ver") {
+    // 13ch to accomodate the longest version number strings: the MELPA style
+    // "20230102.1234" strings
+    return "pr-2 w-[13ch]";
+  }
+
+  return "pr-2";
+}
+
 export default ({ data, pageSize }: { data: Pkg[]; pageSize: number }) => {
   const [pagination, setPagination] = useState({
     pageIndex: 0,
@@ -99,8 +114,8 @@ export default ({ data, pageSize }: { data: Pkg[]; pageSize: number }) => {
     <div>
       <div>
         <input
-          className="w-full border p-1"
-          placeholder="Filter..."
+          className="w-full border px-2 py-1"
+          placeholder="Filter packages by name or summary..."
           onChange={(e) => table.setGlobalFilter(`${e.target.value}`)}
         ></input>
       </div>
@@ -120,7 +135,7 @@ export default ({ data, pageSize }: { data: Pkg[]; pageSize: number }) => {
           {table.getRowModel().rows.map((row) => (
             <tr key={row.id}>
               {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="pr-2">
+                <td key={cell.id} className={getCellClass(cell.column.id)}>
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}
