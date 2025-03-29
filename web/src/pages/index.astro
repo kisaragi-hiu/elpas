@@ -14,7 +14,7 @@ const { collectedDate, packages } = combined.parse(combinedRaw);
     <p>A listing of multiple ELPAs.</p>
   </section>
   <main class="mx-auto mt-4 w-[95%] max-w-5xl">
-    <PaginatedTable data={packages} pageSize={100} client:load />
+    <PaginatedTable data={packages} pageSize={100} client:only="react" />
     <!-- <TablePagination
       client:load
       tableColumns={["name", "archive", "ver", "summary", "downloads"]}
