@@ -240,7 +240,7 @@ export default function PaginatedTable({
             setGlobalFilterState(globalFilterModuleVar);
           }}
         ></input>
-        <div className="flex flex-wrap gap-2">
+        <div className="mt-2 flex flex-wrap gap-2">
           {archives.map((archive) => (
             <label key={archive} className="select-none">
               <input
@@ -260,9 +260,7 @@ export default function PaginatedTable({
         </div>
       </div>
       <div className="my-2">
-        {globalFilterState === ""
-          ? `${table.getPrePaginationRowModel().rows.length} entries`
-          : `${table.getPrePaginationRowModel().rows.length} matching entries`}
+        {table.getPrePaginationRowModel().rows.length} matching entries
       </div>
       <table className="mt-2 text-sm">
         <thead>
