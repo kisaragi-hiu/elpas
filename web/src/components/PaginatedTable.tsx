@@ -83,7 +83,16 @@ const columns = [
       return filterValue?.includes(row.getValue(columnId));
     },
     meta: {
-      extraClass: "",
+      extraClass: "w-[12ch]",
+    },
+  }),
+  columnHelper.accessor("downloads", {
+    enableGlobalFilter: false,
+    cell: (info) => info.getValue(),
+    sortUndefined: "last",
+    meta: {
+      extraClass: "w-[14ch]",
+      title: "Only available from Melpa",
     },
   }),
   columnHelper.accessor("url", {
@@ -126,6 +135,7 @@ function Header<TData, TValue>({ header }: { header: Header<TData, TValue> }) {
     <div
       className={canSort ? "cursor-pointer select-none" : ""}
       onClick={header.column.getToggleSortingHandler()}
+      title={(header.column.columnDef.meta as { title?: string })?.title}
     >
       {flexRender(header.column.columnDef.header, header.getContext())}
       <SortIndicator status={header.column.getIsSorted()} />
@@ -259,7 +269,7 @@ export default function PaginatedTable({
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <th key={header.id} className="text-left">
+                <th key={header.id} className="pr-4 text-left">
                   <Header header={header} />
                 </th>
               ))}
