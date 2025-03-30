@@ -21,6 +21,8 @@ const { collectedDate, packages } = combined.parse(combinedRaw);
     <p>- Make sure mobile works</p>
     <p>- Link to original archive pages (if any)</p>
     <p>- Information links</p>
+    <p>- Usage page</p>
+    <p>- Individual package pages</p>
   </section>
   <main class="mx-auto mt-4 w-[95%] max-w-7xl">
     <PaginatedTable data={packages} pageSize={100} client:only="react" />
