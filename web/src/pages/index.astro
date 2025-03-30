@@ -1,7 +1,6 @@
 ---
 import Layout from "$l/Layout.astro";
 import PaginatedTable from "$c/PaginatedTable.tsx";
-import { TablePagination } from "svelte-table-pagination";
 
 import { combined } from "$data/schema.ts";
 import combinedRaw from "$data/combined.json";
@@ -15,15 +14,5 @@ const { collectedDate, packages } = combined.parse(combinedRaw);
   </section>
   <main class="mx-auto mt-4 w-[95%] max-w-7xl">
     <PaginatedTable data={packages} pageSize={100} client:only="react" />
-    <!-- <TablePagination
-      client:load
-      tableColumns={["name", "archive", "ver", "summary", "downloads"]}
-      searchableColumns={[true, true, false, true, false]}
-      sortableColumns={[true, true, true, true, true]}
-      isActionColumns={[false, false, false, false, false]}
-      actionsHtml={[[], [], [], [], []]}
-      tableBody={combined}
-    />
-  </main> -->
   </main>
 </Layout>
