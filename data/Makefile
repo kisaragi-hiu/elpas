@@ -1,5 +1,5 @@
 combined.json: cache
-	deno -A data.ts
+	bun data.ts
 
 cache: cache/gnu.json cache/nongnu.json cache/org.json cache/jcs.json
 

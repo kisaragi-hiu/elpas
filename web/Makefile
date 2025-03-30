@@ -1,4 +1,4 @@
-dist:
+build:
 	npx astro build
 
 dev:

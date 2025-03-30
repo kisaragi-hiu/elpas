@@ -1,2 +1,11 @@
+.ONESHELL:
+
 json:
-	cd data && $(MAKE) combined.json
+	cd data
+	bun install
+	$(MAKE) combined.json
+
+build:
+	cd web
+	bun install
+	$(MAKE) build
