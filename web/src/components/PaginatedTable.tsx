@@ -34,19 +34,27 @@ const columnHelper = createColumnHelper<Pkg>();
 const columns = [
   columnHelper.accessor("name", {
     cell: (info) => info.getValue(),
-    // Put numbers on top, like the MELPA list
     sortingFn: (rowA, rowB, columnId) => {
       const a = rowA.original.name;
       const b = rowB.original.name;
       if (a === b) {
         return 0;
       }
+      // Exact match first
       if (globalFilterModuleVar === a) {
         return -1;
-      }
-      if (globalFilterModuleVar === b) {
+      } else if (globalFilterModuleVar === b) {
         return 1;
       }
+      // Prefix match first
+      const aStartsWith = a.startsWith(globalFilterModuleVar);
+      const bStartsWith = b.startsWith(globalFilterModuleVar);
+      if (aStartsWith && !bStartsWith) {
+        return -1;
+      } else if (bStartsWith && !aStartsWith) {
+        return 1;
+      }
+      // Put numbers on top, like the MELPA list
       return sortingFns.basic(rowA, rowB, columnId);
     },
   }),
