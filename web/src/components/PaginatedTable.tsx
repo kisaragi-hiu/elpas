@@ -1,10 +1,11 @@
 // DONE: sorting buttons
 // DONE: filtering input, searching through name and summary
 // TODO: link to source ELPA
-// TODO: link to package URL
+// DONE: link to package URL
 // TODO: pagination
 // DONE: enable/disable archives, keep melpa stable disabled by default
 // DONE: exact matches on top
+// TODO: single package pages
 
 import {
   useReactTable,
@@ -74,10 +75,26 @@ const columns = [
       return filterValue?.includes(row.getValue(columnId));
     },
     meta: {
-      // 6ch for "nongnu", the longest most common archive
-      // only jcs-elpa and melpa-stable are longer, and it's fine if they push
-      // the layout further out
-      extraClass: "min-w-[6ch]",
+      extraClass: "",
+    },
+  }),
+  columnHelper.accessor("url", {
+    enableGlobalFilter: false,
+    header: "source",
+    cell: (info) => {
+      const url = info.getValue();
+      if (url === undefined) {
+        return "-";
+      }
+      return (
+        <a
+          href={info.getValue()}
+          target="_blank"
+          className="text-blue-600 hover:underline"
+        >
+          link
+        </a>
+      );
     },
   }),
 ];
@@ -242,7 +259,7 @@ export default function PaginatedTable({
                 <td
                   key={cell.id}
                   className={clsx(
-                    "pr-2",
+                    "py-1 pr-4",
                     (cell.column.columnDef.meta as { extraClass?: string })
                       ?.extraClass,
                   )}
