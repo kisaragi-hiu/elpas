@@ -32,9 +32,8 @@ jobs:
         uses: oven-sh/setup-bun@v2
       - name: Build
         run: |
-          bun install
           make json
-          cd web && make dist
+          make build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
