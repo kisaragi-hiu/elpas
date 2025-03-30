@@ -80,7 +80,6 @@ const columns = [
   }),
   columnHelper.accessor("url", {
     enableGlobalFilter: false,
-    header: "source",
     cell: (info) => {
       const url = info.getValue();
       if (url === undefined) {
@@ -92,7 +91,7 @@ const columns = [
           target="_blank"
           className="text-blue-600 hover:underline"
         >
-          link
+          {linkDisplay(url)}
         </a>
       );
     },
@@ -121,6 +120,10 @@ function Header<TData, TValue>({ header }: { header: Header<TData, TValue> }) {
       <SortIndicator status={header.column.getIsSorted()} />
     </div>
   );
+}
+
+function linkDisplay(url: string) {
+  return url.replace(/^https?:\/\//, "").replace(/\/$/, "");
 }
 
 export default function PaginatedTable({

@@ -9,11 +9,11 @@ const { collectedDate, packages } = combined.parse(combinedRaw);
 ---
 
 <Layout>
-  <section class="mx-auto mt-16 w-[95%] max-w-5xl">
+  <section class="mx-auto mt-16 w-[95%] max-w-7xl">
     <p>ELPAs list</p>
     <p>A listing of multiple ELPAs.</p>
   </section>
-  <main class="mx-auto mt-4 w-[95%] max-w-5xl">
+  <main class="mx-auto mt-4 w-[95%] max-w-7xl">
     <PaginatedTable data={packages} pageSize={100} client:only="react" />
     <!-- <TablePagination
       client:load
