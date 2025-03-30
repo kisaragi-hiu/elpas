@@ -4,6 +4,7 @@
 // TODO: link to package URL
 // TODO: pagination
 // DONE: enable/disable archives, keep melpa stable disabled by default
+// DONE: exact matches on top
 
 import {
   useReactTable,
@@ -24,12 +25,29 @@ import { versionListEqual, versionListLessThan } from "$data/versionList.ts";
 import { useState, useMemo, useEffect } from "react";
 import clsx from "clsx";
 
+// HACK: a module-level variable that is visible to the sorting predicate. This
+// might be the only way to sort better matches before others.
+let globalFilterModuleVar = "";
+
 const columnHelper = createColumnHelper<Pkg>();
 const columns = [
   columnHelper.accessor("name", {
     cell: (info) => info.getValue(),
     // Put numbers on top, like the MELPA list
-    sortingFn: sortingFns.basic,
+    sortingFn: (rowA, rowB, columnId) => {
+      const a = rowA.original.name;
+      const b = rowB.original.name;
+      if (a === b) {
+        return 0;
+      }
+      if (globalFilterModuleVar === a) {
+        return -1;
+      }
+      if (globalFilterModuleVar === b) {
+        return 1;
+      }
+      return sortingFns.basic(rowA, rowB, columnId);
+    },
   }),
   columnHelper.accessor("summary", {
     cell: (info) => info.getValue(),
@@ -171,7 +189,12 @@ export default function PaginatedTable({
         <input
           className="w-full border px-2 py-1"
           placeholder="Filter packages by name or summary..."
-          onChange={(e) => setGlobalFilterState(`${e.target.value}`)}
+          onChange={(e) => {
+            // Synchronize with the external-to-react JS variable
+            // This is to expose it to be used in the sorting predicate
+            globalFilterModuleVar = `${e.target.value}`;
+            setGlobalFilterState(globalFilterModuleVar);
+          }}
         ></input>
         <div className="flex flex-wrap gap-2">
           {archives.map((archive) => (
