@@ -74,8 +74,10 @@ const columns = [
       return filterValue?.includes(row.getValue(columnId));
     },
     meta: {
-      // 12ch to accomodate the longest archive id, "melpa-stable".
-      extraClass: "w-[12ch]",
+      // 6ch for "nongnu", the longest most common archive
+      // only jcs-elpa and melpa-stable are longer, and it's fine if they push
+      // the layout further out
+      extraClass: "min-w-[6ch]",
     },
   }),
 ];
@@ -156,6 +158,7 @@ export default function PaginatedTable({
     enableSortingRemoval: false,
     initialState: {
       sorting: [{ id: "name", desc: false }],
+      columnOrder: ["archive", "name", "summary", "version"],
     },
 
     getPaginationRowModel: getPaginationRowModel(),
