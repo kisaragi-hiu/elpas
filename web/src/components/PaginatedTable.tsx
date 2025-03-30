@@ -88,7 +88,7 @@ const columns = [
   }),
   columnHelper.accessor("downloads", {
     enableGlobalFilter: false,
-    cell: (info) => info.getValue(),
+    cell: (info) => info.getValue() ?? "-",
     sortUndefined: "last",
     meta: {
       extraClass: "w-[14ch]",
