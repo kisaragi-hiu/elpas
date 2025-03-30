@@ -3,7 +3,7 @@
 // TODO: link to source ELPA
 // TODO: link to package URL
 // TODO: pagination
-// TODO: enable/disable archives, keep melpa stable disabled by default
+// DONE: enable/disable archives, keep melpa stable disabled by default
 
 import {
   useReactTable,
@@ -52,7 +52,9 @@ const columns = [
   columnHelper.accessor("archive", {
     enableGlobalFilter: false,
     cell: (info) => info.getValue(),
-    filterFn: "equals",
+    filterFn: (row, columnId, filterValue) => {
+      return filterValue?.includes(row.getValue(columnId));
+    },
     meta: {
       // 12ch to accomodate the longest archive id, "melpa-stable".
       extraClass: "w-[12ch]",
@@ -117,7 +119,6 @@ export default function PaginatedTable({
       resetArchiveFiltering();
     }
   }, [archiveFiltering, archives]);
-
   // Hook up pagination
   const [pagination, setPagination] = useState({
     pageIndex: 0,
@@ -148,6 +149,21 @@ export default function PaginatedTable({
 
     state: { pagination, globalFilter: globalFilterState },
   });
+  useEffect(() => {
+    const archiveColumn = table.getColumn("archive");
+    if (archiveColumn === undefined) {
+      return;
+    }
+    archiveColumn.setFilterValue(
+      // {a: true, b: false}
+      // -> [["a", true], ["b", false]] (entries array for filtering)
+      // -> [["a", true]] (only keep entries whose value is truthy)
+      // -> ["a"] (only keep keys)
+      Object.entries(archiveFiltering)
+        .filter(([_k, v]) => v)
+        .map(([k, _v]) => k),
+    );
+  }, [archiveFiltering]);
 
   return (
     <div>
