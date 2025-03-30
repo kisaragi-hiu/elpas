@@ -13,6 +13,15 @@ const { collectedDate, packages } = combined.parse(combinedRaw);
     <p>A package listing for multiple Emacs Lisp package archives.</p>
     <p>Package list data last retrieved: {collectedDate.toISOString()}</p>
   </section>
+  <section class="mx-auto my-4 w-[95%] max-w-7xl">
+    <p>Todos:</p>
+    <p>- Actually set up pagination</p>
+    <p>- Update periodically</p>
+    <p>- Theming: make the checkboxes look better; dark mode</p>
+    <p>- Make sure mobile works</p>
+    <p>- Link to original archive pages (if any)</p>
+    <p>- Information links</p>
+  </section>
   <main class="mx-auto mt-4 w-[95%] max-w-7xl">
     <PaginatedTable data={packages} pageSize={100} client:only="react" />
   </main>
