@@ -8,10 +8,17 @@ const { collectedDate, packages } = combined.parse(combinedRaw);
 ---
 
 <Layout>
-  <section class="mx-auto mt-16 w-[95%] max-w-7xl">
-    <p>ELPAs list</p>
+  <section class="mx-auto mt-4 w-[95%] max-w-7xl md:mt-16">
+    <p class="text-3xl">ELPAs list</p>
     <p>A package listing for multiple Emacs Lisp package archives.</p>
     <p>Package list data last retrieved: {collectedDate.toISOString()}</p>
+    <p>
+      By Kisaragi Hiu - <a
+        class="link"
+        target="_blank"
+        href="https://github.com/kisaragi-hiu/elpas">source code</a
+      >
+    </p>
   </section>
   <section class="mx-auto my-4 w-[95%] max-w-7xl">
     <p>Todos:</p>

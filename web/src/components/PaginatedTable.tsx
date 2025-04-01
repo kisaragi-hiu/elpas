@@ -106,10 +106,7 @@ const columns = [
         <a
           href={info.getValue()}
           target="_blank"
-          className={clsx(
-            "text-blue-600 hover:underline",
-            "block max-w-[50ch] truncate md:w-[50ch]",
-          )}
+          className={clsx("link", "block max-w-[40ch] truncate")}
         >
           {linkDisplay(url)}
         </a>
