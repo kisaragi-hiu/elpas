@@ -3,3 +3,10 @@
 @utility link {
   @apply text-blue-600 hover:underline;
 }
+
+@utility btn {
+  @apply cursor-pointer select-none;
+  &:disabled {
+    @apply opacity-50;
+  }
+}

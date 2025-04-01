@@ -2,7 +2,7 @@
 // DONE: filtering input, searching through name and summary
 // TODO: link to source ELPA
 // DONE: link to package URL
-// TODO: pagination
+// DONE: pagination
 // DONE: enable/disable archives, keep melpa stable disabled by default
 // DONE: exact matches on top
 // TODO: single package pages
@@ -18,6 +18,7 @@ import {
   type Header,
   type SortDirection,
   type PaginationState,
+  type Table,
   getFilteredRowModel,
 } from "@tanstack/react-table";
 import useLocalStorageState from "use-local-storage-state";
@@ -129,19 +130,55 @@ function Header<TData, TValue>({ header }: { header: Header<TData, TValue> }) {
   if (header.isPlaceholder) return null;
   const canSort = header.column.getCanSort();
   return (
-    <div
-      className={canSort ? "cursor-pointer select-none" : ""}
+    <button
+      className={canSort ? "btn" : ""}
       onClick={header.column.getToggleSortingHandler()}
       title={(header.column.columnDef.meta as { title?: string })?.title}
     >
       {flexRender(header.column.columnDef.header, header.getContext())}
       <SortIndicator status={header.column.getIsSorted()} />
-    </div>
+    </button>
   );
 }
 
 function linkDisplay(url: string) {
   return url.replace(/^https?:\/\//, "").replace(/\/$/, "");
+}
+
+function Pages<T>({ table }: { table: Table<T> }) {
+  return (
+    <>
+      <button
+        className="btn p-1"
+        disabled={!table.getCanPreviousPage()}
+        onClick={() => table.firstPage()}
+      >
+        <i className="bi bi-chevron-bar-left"></i>
+      </button>
+      <button
+        className="btn p-1"
+        disabled={!table.getCanPreviousPage()}
+        onClick={() => table.previousPage()}
+      >
+        <i className="bi bi-chevron-left"></i>
+      </button>
+      <div>{table.getState().pagination.pageIndex + 1}</div>
+      <button
+        className="btn p-1"
+        disabled={!table.getCanNextPage()}
+        onClick={() => table.nextPage()}
+      >
+        <i className="bi bi-chevron-right"></i>
+      </button>
+      <button
+        className="btn"
+        disabled={!table.getCanNextPage()}
+        onClick={() => table.lastPage()}
+      >
+        <i className="bi bi-chevron-bar-right"></i>
+      </button>
+    </>
+  );
 }
 
 export default function PaginatedTable({
@@ -259,6 +296,9 @@ export default function PaginatedTable({
       <div className="my-2">
         {table.getPrePaginationRowModel().rows.length} matching entries
       </div>
+      <div className="flex items-baseline text-lg">
+        <Pages table={table} />
+      </div>
       <div className="overflow-x-auto">
         <table className="mt-2 text-sm">
           <thead>
@@ -307,6 +347,9 @@ export default function PaginatedTable({
             ))}
           </tfoot>
         </table>
+        <div className="flex items-baseline text-lg">
+          <Pages table={table} />
+        </div>
       </div>
     </div>
   );
