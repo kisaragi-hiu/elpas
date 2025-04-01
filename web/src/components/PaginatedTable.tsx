@@ -108,7 +108,7 @@ const columns = [
           target="_blank"
           className={clsx(
             "text-blue-600 hover:underline",
-            "block w-[20ch] truncate md:w-[50ch]",
+            "block max-w-[50ch] truncate md:w-[50ch]",
           )}
         >
           {linkDisplay(url)}
@@ -262,53 +262,55 @@ export default function PaginatedTable({
       <div className="my-2">
         {table.getPrePaginationRowModel().rows.length} matching entries
       </div>
-      <table className="mt-2 text-sm">
-        <thead>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <th key={header.id} className="pr-4 text-left">
-                  <Header header={header} />
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {table.getRowModel().rows.map((row) => (
-            <tr key={row.id}>
-              {row.getVisibleCells().map((cell) => (
-                <td
-                  key={cell.id}
-                  className={clsx(
-                    "py-1 pr-4",
-                    (cell.column.columnDef.meta as { extraClass?: string })
-                      ?.extraClass,
-                  )}
-                >
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-        <tfoot>
-          {table.getFooterGroups().map((footerGroup) => (
-            <tr key={footerGroup.id}>
-              {footerGroup.headers.map((header) => (
-                <th key={header.id}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.footer,
-                        header.getContext(),
-                      )}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </tfoot>
-      </table>
+      <div className="overflow-x-auto">
+        <table className="mt-2 text-sm">
+          <thead>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <th key={header.id} className="pr-4 text-left">
+                    <Header header={header} />
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+            {table.getRowModel().rows.map((row) => (
+              <tr key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <td
+                    key={cell.id}
+                    className={clsx(
+                      "py-1 pr-4",
+                      (cell.column.columnDef.meta as { extraClass?: string })
+                        ?.extraClass,
+                    )}
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+          <tfoot>
+            {table.getFooterGroups().map((footerGroup) => (
+              <tr key={footerGroup.id}>
+                {footerGroup.headers.map((header) => (
+                  <th key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.footer,
+                          header.getContext(),
+                        )}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </tfoot>
+        </table>
+      </div>
     </div>
   );
 }
