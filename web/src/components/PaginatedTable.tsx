@@ -283,16 +283,27 @@ export default function PaginatedTable({
   return (
     <div>
       <div>
-        <input
-          className="w-full border px-2 py-1"
-          placeholder="Filter packages by name or summary..."
-          onChange={(e) => {
-            // Synchronize with the external-to-react JS variable
-            // This is to expose it to be used in the sorting predicate
-            globalFilterModuleVar = `${e.target.value}`;
-            setGlobalFilterState(globalFilterModuleVar);
-          }}
-        ></input>
+        {/* Input style from https://tailwindcss.com/plus/ui-blocks/application-ui/forms/input-groups */}
+        <div
+          className={clsx(
+            "flex items-center rounded-md bg-white outline-1 -outline-offset-1 outline-gray-300",
+            "has-[input:focus-within]:outline-2 has-[input:focus-within]:-outline-offset-2 has-[input:focus-within]:outline-blue-600",
+          )}
+        >
+          <input
+            id="price"
+            name="price"
+            type="text"
+            placeholder="Filter packages by name or summary..."
+            className="block min-w-0 grow px-2 py-1.5 text-lg focus:outline-none sm:text-sm/6"
+            onChange={(e) => {
+              // Synchronize with the external-to-react JS variable
+              // This is to expose it to be used in the sorting predicate
+              globalFilterModuleVar = `${e.target.value}`;
+              setGlobalFilterState(globalFilterModuleVar);
+            }}
+          />
+        </div>
         <div className="mt-2 flex flex-wrap gap-2">
           {archives.map((archive) => (
             <label key={archive} className="select-none">
