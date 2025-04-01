@@ -7,6 +7,6 @@
 @utility btn {
   @apply cursor-pointer select-none;
   &:disabled {
-    @apply opacity-50;
+    @apply cursor-auto opacity-50;
   }
 }

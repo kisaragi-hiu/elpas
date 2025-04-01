@@ -31,6 +31,6 @@ const { collectedDate, packages } = combined.parse(combinedRaw);
     <p>- Individual package pages</p>
   </section>
   <main class="mx-auto mt-4 w-[95%] max-w-7xl">
-    <PaginatedTable data={packages} pageSize={100} client:only="react" />
+    <PaginatedTable data={packages} pageSize={50} client:only="react" />
   </main>
 </Layout>

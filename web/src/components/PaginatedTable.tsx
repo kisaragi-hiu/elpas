@@ -7,6 +7,12 @@
 // DONE: exact matches on top
 // TODO: single package pages
 
+import biChevronUp from "bootstrap-icons/icons/chevron-up.svg";
+import biChevronDown from "bootstrap-icons/icons/chevron-down.svg";
+import biChevronRight from "bootstrap-icons/icons/chevron-right.svg";
+import biChevronLeft from "bootstrap-icons/icons/chevron-left.svg";
+import biChevronBarRight from "bootstrap-icons/icons/chevron-bar-right.svg";
+import biChevronBarLeft from "bootstrap-icons/icons/chevron-bar-left.svg";
 import {
   useReactTable,
   getCoreRowModel,
@@ -118,9 +124,9 @@ const columns = [
 
 function SortIndicator({ status }: { status: SortDirection | false }) {
   if (status === "asc") {
-    return <i className="bi bi-chevron-up"></i>;
+    return <img className="inline" src={biChevronUp.src} />;
   } else if (status === "desc") {
-    return <i className="bi bi-chevron-down"></i>;
+    return <img className="inline" src={biChevronDown.src} />;
   } else {
     return null;
   }
@@ -146,38 +152,51 @@ function linkDisplay(url: string) {
 }
 
 function Pages<T>({ table }: { table: Table<T> }) {
+  // Style based on the Tailwind Plus Pagination
+  // https://tailwindcss.com/plus/ui-blocks/application-ui/navigation/pagination
+  // The key insight is using inline-flex + items-center to align things,
+  // especially images and text.
   return (
-    <>
+    <nav
+      aria-label="Pagination"
+      className={clsx(
+        "isolate inline-flex rounded-md",
+        "[&>button]:btn [&>button]:inline-flex [&>button]:items-center [&>button]:rounded-md [&>button]:p-2",
+        "[&>button]:hover:bg-stone-200",
+      )}
+    >
       <button
-        className="btn p-1"
         disabled={!table.getCanPreviousPage()}
         onClick={() => table.firstPage()}
       >
-        <i className="bi bi-chevron-bar-left"></i>
+        <span className="sr-only">First</span>
+        <img className="inline size-5" src={biChevronBarLeft.src} />
       </button>
       <button
-        className="btn p-1"
         disabled={!table.getCanPreviousPage()}
         onClick={() => table.previousPage()}
       >
-        <i className="bi bi-chevron-left"></i>
+        <span className="sr-only">Previous</span>
+        <img className="inline size-5" src={biChevronLeft.src} />
       </button>
-      <div>{table.getState().pagination.pageIndex + 1}</div>
+      <span className="inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700">
+        page {table.getState().pagination.pageIndex + 1}/{table.getPageCount()}
+      </span>
       <button
-        className="btn p-1"
         disabled={!table.getCanNextPage()}
         onClick={() => table.nextPage()}
       >
-        <i className="bi bi-chevron-right"></i>
+        <span className="sr-only">Next</span>
+        <img className="inline size-5" src={biChevronRight.src} />
       </button>
       <button
-        className="btn"
         disabled={!table.getCanNextPage()}
         onClick={() => table.lastPage()}
       >
-        <i className="bi bi-chevron-bar-right"></i>
+        <span className="sr-only">Last</span>
+        <img className="inline size-5" src={biChevronBarRight.src} />
       </button>
-    </>
+    </nav>
   );
 }
 
@@ -296,9 +315,7 @@ export default function PaginatedTable({
       <div className="my-2">
         {table.getPrePaginationRowModel().rows.length} matching entries
       </div>
-      <div className="flex items-baseline text-lg">
-        <Pages table={table} />
-      </div>
+      <Pages table={table} />
       <div className="overflow-x-auto">
         <table className="mt-2 text-sm">
           <thead>
@@ -347,9 +364,7 @@ export default function PaginatedTable({
             ))}
           </tfoot>
         </table>
-        <div className="flex items-baseline text-lg">
-          <Pages table={table} />
-        </div>
+        <Pages table={table} />
       </div>
     </div>
   );
