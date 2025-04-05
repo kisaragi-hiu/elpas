@@ -175,7 +175,26 @@ function linkDisplay(url: string) {
   return url.replace(/^https?:\/\//, "").replace(/\/$/, "");
 }
 
-function Pages<T>({ table }: { table: Table<T> }) {
+/**
+ * The page numbers and switch page buttons.
+ * `canPrevious`, `canNext`, `pageIndex`, `pageCount` should be passed in by
+ * getting the information from the table. This is to avoid having this
+ * component read from things that are not in its input (ie. to make sure it is
+ * pure).
+ */
+function Pages<T>({
+  canPrevious,
+  canNext,
+  pageIndex,
+  pageCount,
+  table,
+}: {
+  canPrevious: boolean;
+  canNext: boolean;
+  pageIndex: number;
+  pageCount: number;
+  table: Table<T>;
+}) {
   // Style based on the Tailwind Plus Pagination
   // https://tailwindcss.com/plus/ui-blocks/application-ui/navigation/pagination
   // The key insight is using inline-flex + items-center to align things,
@@ -188,35 +207,22 @@ function Pages<T>({ table }: { table: Table<T> }) {
         "[&>button]:btn [&>button]:btn-style [&>button]:p-2",
       )}
     >
-      <button
-        disabled={!table.getCanPreviousPage()}
-        onClick={() => table.firstPage()}
-      >
+      <button disabled={!canPrevious} onClick={() => table.firstPage()}>
         <span className="sr-only">First</span>
         <img className="inline size-5" src={biChevronBarLeft.src} />
       </button>
-      <button
-        disabled={!table.getCanPreviousPage()}
-        onClick={() => table.previousPage()}
-      >
+      <button disabled={!canPrevious} onClick={() => table.previousPage()}>
         <span className="sr-only">Previous</span>
         <img className="inline size-5" src={biChevronLeft.src} />
       </button>
       <span className="w-[15ch] px-3 py-2 text-center text-sm font-semibold text-gray-700">
-        page {table.getState().pagination.pageIndex + 1}/
-        {Math.max(table.getPageCount(), 1)}
+        page {pageIndex + 1}/{Math.max(pageCount, 1)}
       </span>
-      <button
-        disabled={!table.getCanNextPage()}
-        onClick={() => table.nextPage()}
-      >
+      <button disabled={!canNext} onClick={() => table.nextPage()}>
         <span className="sr-only">Next</span>
         <img className="inline size-5" src={biChevronRight.src} />
       </button>
-      <button
-        disabled={!table.getCanNextPage()}
-        onClick={() => table.lastPage()}
-      >
+      <button disabled={!canNext} onClick={() => table.lastPage()}>
         <span className="sr-only">Last</span>
         <img className="inline size-5" src={biChevronBarRight.src} />
       </button>
@@ -386,7 +392,13 @@ export default function PaginatedTable({
         </div>
       </div>
       <div className="mb-2">{matchedEntryCount} matching entries</div>
-      <Pages table={table} />
+      <Pages
+        canPrevious={table.getCanPreviousPage()}
+        canNext={table.getCanNextPage()}
+        pageIndex={table.getState().pagination.pageIndex}
+        pageCount={table.getPageCount()}
+        table={table}
+      />
       <div className="overflow-x-auto">
         <table className="mt-2 text-sm">
           <thead>
@@ -436,7 +448,15 @@ export default function PaginatedTable({
           </tfoot>
         </table>
       </div>
-      {matchedEntryCount !== 0 && <Pages table={table} />}
+      {matchedEntryCount !== 0 && (
+        <Pages
+          canPrevious={table.getCanPreviousPage()}
+          canNext={table.getCanNextPage()}
+          pageIndex={table.getState().pagination.pageIndex}
+          pageCount={table.getPageCount()}
+          table={table}
+        />
+      )}
     </div>
   );
 }
