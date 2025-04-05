@@ -31,9 +31,10 @@ import useLocalStorageState from "use-local-storage-state";
 import type { Pkg } from "$data/schema.ts";
 import { archivePkgUrl } from "$data/schema.ts";
 import { versionListEqual, versionListLessThan } from "$data/versionList.ts";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import clsx from "clsx";
 import { memoize } from "@std/cache/memoize";
+import { debounce } from "@std/async";
 
 // HACK: a module-level variable that is visible to the sorting predicate. This
 // might be the only way to sort better matches before others.
@@ -328,6 +329,14 @@ export default function PaginatedTable({
   }, [archiveFiltering]);
 
   const matchedEntryCount = table.getPrePaginationRowModel().rows.length;
+  const globalFilterOnChange = useCallback(
+    debounce((e: React.ChangeEvent<HTMLInputElement>) => {
+      // Synchronize with the external-to-react JS variable
+      // This is to expose it to be used in the sorting predicate
+      globalFilterModuleVar = `${e.target.value}`;
+      setGlobalFilterState(globalFilterModuleVar);
+    }, []),
+  );
 
   return (
     <div>
@@ -347,12 +356,7 @@ export default function PaginatedTable({
               type="text"
               placeholder="Filter packages by name or summary..."
               className="color-bg-secondary block min-w-0 grow rounded-md px-2 py-1.5 focus:outline-none"
-              onChange={(e) => {
-                // Synchronize with the external-to-react JS variable
-                // This is to expose it to be used in the sorting predicate
-                globalFilterModuleVar = `${e.target.value}`;
-                setGlobalFilterState(globalFilterModuleVar);
-              }}
+              onChange={globalFilterOnChange}
             />
           </div>
         )}
