@@ -70,6 +70,9 @@ const columns = [
       // Put numbers on top, like the MELPA list
       return sortingFns.basic(rowA, rowB, columnId);
     },
+    meta: {
+      extraClass: "whitespace-nowrap",
+    },
   }),
   columnHelper.accessor("summary", {
     cell: (info) => info.getValue(),
