@@ -11,3 +11,11 @@ Browser interface for searching for Emacs packages.
 
 - MELPA :: MELPA has JSON for its package list (used by its frontend) so this is simple.
 - Other ELPAs :: the ELPA =archive-contents= format is… Emacs Lisp S-expressions. Reasonable given its main use. But this means we have to run Emacs to process it at some point. It's far better to do this at build time, of course.
+
+** Set up
+
+#+begin_src sh
+make dev
+#+end_src
+
+Which runs =bun install=, goes into =web/=, and runs the Astro dev server.
