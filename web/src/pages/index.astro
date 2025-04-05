@@ -1,14 +1,11 @@
 ---
 import Layout from "$l/Layout.astro";
 import PaginatedTable from "$c/PaginatedTable.tsx";
-
-import { combined } from "$data/schema.ts";
-import combinedRaw from "$data/combined.json";
-const { collectedDate, packages } = combined.parse(combinedRaw);
+import { collectedDate, packages } from "$data/data.ts";
 ---
 
 <Layout>
-  <section class="mx-auto mt-4 w-[95%] max-w-7xl md:mt-16">
+  <section class="section mt-4 md:mt-16">
     <p class="text-3xl">ELPAs list</p>
     <p>A package listing for multiple Emacs Lisp package archives.</p>
     <p>Package list data last retrieved: {collectedDate.toISOString()}</p>
@@ -20,16 +17,15 @@ const { collectedDate, packages } = combined.parse(combinedRaw);
       >
     </p>
   </section>
-  <section class="mx-auto my-4 w-[95%] max-w-7xl">
+  <section class="section my-4">
     <p>Todos:</p>
     <p>- Update periodically</p>
     <p>- Theming: dark mode</p>
     <p>- Link to original archive pages (if any)</p>
     <p>- Information links</p>
     <p>- Usage page</p>
-    <p>- Individual package pages</p>
   </section>
-  <main class="mx-auto mt-4 w-[95%] max-w-7xl">
+  <main class="section mt-4">
     <PaginatedTable data={packages} pageSize={50} client:only="react" />
   </main>
 </Layout>

@@ -10,3 +10,7 @@
     @apply cursor-auto opacity-50;
   }
 }
+
+@utility section {
+  @apply mx-auto w-[95%] max-w-7xl;
+}

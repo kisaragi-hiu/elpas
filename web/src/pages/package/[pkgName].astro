@@ -1,0 +1,91 @@
+---
+import { archivePkgUrl } from "$data/schema.ts";
+import { pkgNameIndex } from "$data/data.ts";
+const { pkgName } = Astro.params;
+export function getStaticPaths() {
+  return Object.entries(pkgNameIndex).flatMap(([name, _pkgs]) => ({
+    params: { pkgName: name },
+  }));
+}
+
+const pkgs = pkgNameIndex[pkgName] ?? [];
+
+import Layout from "$l/Layout.astro";
+---
+
+<Layout>
+  <section class="section mt-4 md:mt-16">
+    <h2 class="text-3xl">
+      {pkgName}
+    </h2>
+    <div>
+      <a class="link" href="/">Back to listing</a>
+    </div>
+  </section>
+  {
+    pkgs.map((pkg) => {
+      const urlOnArchive = archivePkgUrl(pkg.archive, pkg.name, pkg);
+      return (
+        <section class="section my-4">
+          <h3 class="">
+            {pkg.name} ::{" "}
+            {urlOnArchive ? (
+              <a class="link" target="_blank" href={urlOnArchive}>
+                {pkg.archive}
+              </a>
+            ) : (
+              <span>{pkg.archive}</span>
+            )}
+          </h3>
+          <div>{pkg.summary}</div>
+          <dl class="[&_dd]:pl-2 [&_dt]:font-bold">
+            <div>
+              <dt>Version</dt>
+              <dd>{pkg.ver.join(".")}</dd>
+            </div>
+            <div>
+              <dt>Dependencies</dt>
+              <dd>
+                {pkg.deps
+                  ? Object.entries(pkg.deps).map(
+                      ([pkg, ver]) => `${pkg} ${ver.join(".")}`,
+                    )
+                  : "None"}
+              </dd>
+            </div>
+            <div>
+              <dt>Downloads</dt>
+              <dd>{pkg.downloads || "Unknown"}</dd>
+            </div>
+            {pkg.maintainers && (
+              <div>
+                <dt>Maintainers</dt>
+                <dd>{pkg.maintainers}</dd>
+              </div>
+            )}
+            {pkg.authors && (
+              <div>
+                <dt>Authors</dt>
+                <dd>{pkg.authors}</dd>
+              </div>
+            )}
+            <div>
+              <dt>Commit</dt>
+              <dd>{pkg.commit}</dd>
+            </div>
+            {pkg.url && (
+              <div>
+                <dt>URL</dt>
+                <dd>
+                  <a href={pkg.url} class="link" target="_blank">
+                    {pkg.url}
+                  </a>
+                </dd>
+              </div>
+            )}
+          </dl>
+        </section>
+      );
+    })
+  }
+</Layout>

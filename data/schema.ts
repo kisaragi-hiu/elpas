@@ -180,3 +180,20 @@ export const combined = z.object({
   collectedDate: z.coerce.date(),
   packages: z.array(pkg),
 });
+
+/**
+ * Return `pkg`'s page on `archive`.
+ */
+export function archivePkgUrl(archive: string, pkg: string, fallbackPkg?: Pkg) {
+  if (archive === "gnu") return `https://elpa.gnu.org/packages/${pkg}.html`;
+  if (archive === "nongnu") return `https://elpa.nongnu.org/nongnu/${pkg}.html`;
+  // FIXME: remove this
+  if (archive === "org")
+    return `https://git.sr.ht/~bzg/orgweb/commit/f1ddfc44a1df04ebcb39613cbd459057b486d0cb`;
+  if (archive === "jcs-elpa")
+    return fallbackPkg
+      ? fallbackPkg.url
+      : `https://github.com/jcs-emacs/jcs-elpa/blob/master/recipes/${pkg}`;
+  if (archive === "melpa") return `https://melpa.org/#/${pkg}`;
+  if (archive === "melpa-stable") return `https://stable.melpa.org/#/${pkg}`;
+}

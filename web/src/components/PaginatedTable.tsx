@@ -40,7 +40,11 @@ let globalFilterModuleVar = "";
 const columnHelper = createColumnHelper<Pkg>();
 const columns = [
   columnHelper.accessor("name", {
-    cell: (info) => info.getValue(),
+    cell: (info) => (
+      <a className="link" href={`/package/${info.getValue()}`}>
+        {info.getValue()}
+      </a>
+    ),
     sortingFn: (rowA, rowB, columnId) => {
       const a = rowA.original.name;
       const b = rowB.original.name;
