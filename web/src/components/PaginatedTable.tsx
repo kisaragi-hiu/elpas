@@ -266,7 +266,7 @@ export default function PaginatedTable({
   // Hook up pagination
   const [pagination, setPagination] = useState({
     pageIndex: 0,
-    pageSize: 500,
+    pageSize: 200,
   } as PaginationState);
 
   const [globalFilterState, setGlobalFilterState] = useState("");
