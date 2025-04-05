@@ -5,7 +5,7 @@
 // DONE: pagination
 // DONE: enable/disable archives, keep melpa stable disabled by default
 // DONE: exact matches on top
-// TODO: single package pages
+// DONE: single package pages
 
 import biChevronUp from "bootstrap-icons/icons/chevron-up.svg";
 import biChevronDown from "bootstrap-icons/icons/chevron-down.svg";
@@ -165,8 +165,7 @@ function Pages<T>({ table }: { table: Table<T> }) {
       aria-label="Pagination"
       className={clsx(
         "isolate inline-flex gap-2 rounded-md",
-        "[&>button]:btn [&>button]:inline-flex [&>button]:items-center [&>button]:rounded-md [&>button]:p-2",
-        "[&>button]:bg-gray-200 [&>button]:hover:bg-gray-100 [&>button]:disabled:hover:bg-gray-200",
+        "[&>button]:btn [&>button]:btn-style [&>button]:p-2",
       )}
     >
       <button
@@ -313,35 +312,57 @@ export default function PaginatedTable({
             />
           </div>
         )}
-        <div className="mt-3 flex flex-wrap space-y-3 space-x-2">
-          {archives.map((archive) => (
-            <div key={archive}>
-              <input
-                type="checkbox"
-                checked={archiveFiltering[archive]}
-                onChange={(e) => {
-                  setArchiveFiltering({
-                    ...archiveFiltering,
-                    [archive]: e.target.checked,
-                  });
-                }}
-                className="peer sr-only"
-                id={`check-${archive}`}
-              ></input>
-              <label
-                htmlFor={`check-${archive}`}
-                className={clsx(
-                  "cursor-pointer select-none",
-                  "rounded-lg px-2 py-1",
-                  "bg-gray-200 hover:bg-gray-100",
-                  "peer-checked:bg-gray-800 peer-checked:hover:bg-gray-700",
-                  "peer-checked:text-white",
-                )}
-              >
-                {archive}
-              </label>
-            </div>
-          ))}
+        <div>
+          <div className="mt-3 flex flex-wrap space-y-3 space-x-2">
+            {archives.map((archive) => (
+              <div key={archive}>
+                <input
+                  type="checkbox"
+                  checked={archiveFiltering[archive]}
+                  onChange={(e) => {
+                    setArchiveFiltering({
+                      ...archiveFiltering,
+                      [archive]: e.target.checked,
+                    });
+                  }}
+                  className="peer sr-only"
+                  id={`check-${archive}`}
+                ></input>
+                <label
+                  htmlFor={`check-${archive}`}
+                  className={clsx(
+                    "cursor-pointer select-none",
+                    "rounded-lg px-2 py-1",
+                    "bg-gray-200 hover:bg-gray-100",
+                    "peer-checked:bg-gray-800 peer-checked:hover:bg-gray-700",
+                    "peer-checked:text-white",
+                  )}
+                >
+                  {archive}
+                </label>
+              </div>
+            ))}
+          </div>
+          <div className="flex flex-wrap space-x-2">
+            <button
+              className="btn btn-style p-1"
+              onClick={() => {
+                setArchiveFiltering(
+                  Object.fromEntries(
+                    archives.map((archive) => [archive, false]),
+                  ),
+                );
+              }}
+            >
+              deselect all
+            </button>
+            <button
+              className="btn btn-style px-2 py-0"
+              onClick={resetArchiveFiltering}
+            >
+              reset to default
+            </button>
+          </div>
         </div>
       </div>
       <div className="mb-2">{matchedEntryCount} matching entries</div>

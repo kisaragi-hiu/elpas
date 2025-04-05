@@ -11,6 +11,11 @@
   }
 }
 
+@utility btn-style {
+  @apply inline-flex items-center rounded-md;
+  @apply bg-gray-200 hover:bg-gray-100 disabled:hover:bg-gray-200;
+}
+
 @utility section {
   @apply mx-auto w-[95%] max-w-7xl;
 }
