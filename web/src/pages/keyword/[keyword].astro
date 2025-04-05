@@ -1,5 +1,5 @@
 ---
-import { keywordPkgIndex } from "$data/data.ts";
+import { keywordPkgIndex, finderKnownKeywords } from "$data/data.ts";
 const { keyword } = Astro.params;
 export function getStaticPaths() {
   return Object.entries(keywordPkgIndex).flatMap(([keyword, _pkgs]) => ({
@@ -18,6 +18,13 @@ import Layout from "$l/Layout.astro";
     <h2 class="text-3xl">
       package keyword: {keyword}
     </h2>
+    {
+      finderKnownKeywords[keyword] && (
+        <div class="italic">
+          <p>{finderKnownKeywords[keyword]}</p>
+        </div>
+      )
+    }
     <div>
       <a class="link" href="/">Back to listing</a>
     </div>

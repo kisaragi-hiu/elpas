@@ -1,5 +1,6 @@
 ---
 import Layout from "$l/Layout.astro";
+import Out from "$c/Out.astro";
 ---
 
 <Layout>
@@ -13,11 +14,29 @@ import Layout from "$l/Layout.astro";
     <p>
       This is <em>not</em> an ELPA in and of itself.
     </p>
-    <h2 class="text-3xl">Usage</h2>
+    <h2 class="text-2xl">Usage</h2>
     <p>Search through package name or summary by typing in the filter bar.</p>
     <p>
       Use the chips to select which archives to show. By default MELPA Stable is
       deselected. This selection is persisted in the browser.
+    </p>
+    <h2 class="text-2xl">Notes</h2>
+    <p>
+      The description of the keywords are taken directly from the definition of
+      finder-known-keywords.
+    </p>
+    <p>
+      MELPA and MELPA Stable data are read directly from their archive.json,
+      recipes.json, and download_counts.json files, as they contain more
+      information than the ELPA archive-contents mechanism.
+    </p>
+    <p>
+      Data from other archives are read from their <Out
+        class="link"
+        href="https://www.gnu.org/software/emacs/manual/html_node/elisp/Archive-Web-Server.html"
+        >archive-contents endpoints</Out
+      >, the same endpoints used within Emacs to list and install packages. Long
+      descriptions are not currently indexed or served.
     </p>
     <a class="link" href="/">Back to listing</a>
   </main>

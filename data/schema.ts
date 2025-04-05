@@ -197,3 +197,5 @@ export function archivePkgUrl(archive: string, pkg: string, fallbackPkg?: Pkg) {
   if (archive === "melpa") return `https://melpa.org/#/${pkg}`;
   if (archive === "melpa-stable") return `https://stable.melpa.org/#/${pkg}`;
 }
+
+export const finderKnownKeywords = z.record(z.string());

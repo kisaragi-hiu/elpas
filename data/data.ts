@@ -1,8 +1,16 @@
 import combinedRaw from "./combined.json";
-import { combined, type Pkg } from "./schema.ts";
+import finderKnownKeywordsRaw from "./finder-known-keywords.json";
+import {
+  combined,
+  type Pkg,
+  finderKnownKeywords as finderKnownKeywordsSchema,
+} from "./schema.ts";
 
 const parsed = combined.parse(combinedRaw);
 
+export const finderKnownKeywords = finderKnownKeywordsSchema.parse(
+  finderKnownKeywordsRaw,
+);
 export const collectedDate = parsed.collectedDate;
 export const packages = parsed.packages;
 export const pkgNameIndex = Object.groupBy(packages, (elem) => elem.name);
