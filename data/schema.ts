@@ -187,9 +187,6 @@ export const combined = z.object({
 export function archivePkgUrl(archive: string, pkg: string, fallbackPkg?: Pkg) {
   if (archive === "gnu") return `https://elpa.gnu.org/packages/${pkg}.html`;
   if (archive === "nongnu") return `https://elpa.nongnu.org/nongnu/${pkg}.html`;
-  // FIXME: remove this
-  if (archive === "org")
-    return `https://git.sr.ht/~bzg/orgweb/commit/f1ddfc44a1df04ebcb39613cbd459057b486d0cb`;
   if (archive === "jcs-elpa")
     return fallbackPkg
       ? fallbackPkg.url

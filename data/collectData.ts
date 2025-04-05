@@ -102,7 +102,6 @@ const melpas = {
 const elpas = {
   gnu: await getElpaJson("https://elpa.gnu.org/packages/", "gnu.json"),
   nongnu: await getElpaJson("https://elpa.nongnu.org/nongnu/", "nongnu.json"),
-  org: await getElpaJson("https://orgmode.org/elpa/", "org.json"),
   "jcs-elpa": await getElpaJson(
     "https://jcs-emacs.github.io/jcs-elpa/packages/",
     "jcs-elpa.json",
