@@ -2,6 +2,8 @@ import {
   melpaArchiveJson,
   melpaDownloadCountsJson,
   elpaConvertedJson,
+  melpaRecipesJson,
+  melpaRecipeToUrl,
 } from "./schema.ts";
 import type { Pkg } from "./schema.ts";
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
@@ -17,7 +19,7 @@ async function getElpaJson(url: string, cacheName?: string) {
   if (cacheName) {
     try {
       return elpaConvertedJson.parse(
-        JSON.parse(readFileSync(`cache/${cacheName}`, { encoding: "utf-8" }))
+        JSON.parse(readFileSync(`cache/${cacheName}`, { encoding: "utf-8" })),
       );
     } catch {}
   }
@@ -35,7 +37,7 @@ async function getJson(url: string, cacheName?: string) {
   if (cacheName) {
     try {
       return JSON.parse(
-        readFileSync(`cache/${cacheName}`, { encoding: "utf-8" })
+        readFileSync(`cache/${cacheName}`, { encoding: "utf-8" }),
       );
     } catch {}
   }
@@ -57,13 +59,16 @@ const melpas = {
     //   already in URL within archive.json, and we don't need the file paths.
     // - download_counts.json is as the name says. It is an object of names to numbers.
     archive: melpaArchiveJson.parse(
-      await getJson("https://melpa.org/archive.json", "melpa-archive.json")
+      await getJson("https://melpa.org/archive.json", "melpa-archive.json"),
+    ),
+    recipes: melpaRecipesJson.parse(
+      await getJson("https://melpa.org/recipes.json", "melpa-recipes.json"),
     ),
     downloads: melpaDownloadCountsJson.parse(
       await getJson(
         "https://melpa.org/download_counts.json",
-        "melpa-download-counts.json"
-      )
+        "melpa-download-counts.json",
+      ),
     ),
   },
   "melpa-stable": {
@@ -76,14 +81,20 @@ const melpas = {
     archive: melpaArchiveJson.parse(
       await getJson(
         "https://stable.melpa.org/archive.json",
-        "melpa-stable-archive.json"
-      )
+        "melpa-stable-archive.json",
+      ),
+    ),
+    recipes: melpaRecipesJson.parse(
+      await getJson(
+        "https://stable.melpa.org/recipes.json",
+        "melpa-recipes.json",
+      ),
     ),
     downloads: melpaDownloadCountsJson.parse(
       await getJson(
         "https://stable.melpa.org/download_counts.json",
-        "melpa-stable-download-counts.json"
-      )
+        "melpa-stable-download-counts.json",
+      ),
     ),
   },
 };
@@ -94,7 +105,7 @@ const elpas = {
   org: await getElpaJson("https://orgmode.org/elpa/", "org.json"),
   "jcs-elpa": await getElpaJson(
     "https://jcs-emacs.github.io/jcs-elpa/packages/",
-    "jcs-elpa.json"
+    "jcs-elpa.json",
   ),
 };
 
@@ -102,7 +113,7 @@ const packages: Pkg[] = [];
 
 for (const [archiveName, pkgs] of Object.entries(elpas)) {
   for (const [pkgName, [version, deps, desc, _kind, props]] of Object.entries(
-    pkgs
+    pkgs,
   )) {
     const newPkg: Pkg = {
       name: pkgName,
@@ -122,7 +133,9 @@ for (const [archiveName, pkgs] of Object.entries(elpas)) {
   }
 }
 
-for (const [archiveName, { archive, downloads }] of Object.entries(melpas)) {
+for (const [archiveName, { archive, downloads, recipes }] of Object.entries(
+  melpas,
+)) {
   for (const [pkgName, { ver, deps, desc, props }] of Object.entries(archive)) {
     const newPkg: Pkg = {
       name: pkgName,
@@ -139,7 +152,18 @@ for (const [archiveName, { archive, downloads }] of Object.entries(melpas)) {
     if (props.keywords) newPkg.keywords = props.keywords;
     if (props.commit) newPkg.commit = props.commit;
     // throwing away revdesc
-    if (props.url) newPkg.url = props.url;
+
+    const recipe = recipes[pkgName];
+    if (recipe) {
+      const recipeUrl = melpaRecipeToUrl(recipe);
+      newPkg.url = recipeUrl;
+    } else if (props.url) {
+      // fall back to the URL the package itself declares
+      console.log(
+        `${pkgName} has no URL in its recipe, somehow. Falling back to ${props.url}`,
+      );
+      newPkg.url = props.url;
+    }
 
     packages.push(newPkg);
   }
@@ -147,5 +171,5 @@ for (const [archiveName, { archive, downloads }] of Object.entries(melpas)) {
 
 writeFileSync(
   "combined.json",
-  JSON.stringify({ collectedDate: new Date(), packages: packages }, null, 1)
+  JSON.stringify({ collectedDate: new Date(), packages: packages }, null, 1),
 );

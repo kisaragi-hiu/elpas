@@ -36,6 +36,7 @@ export const elpaConvertedJson = z.record(
       summary,
       elpaPackageKind,
       z.object({
+        /** This is the URL written in the main file itself */
         url: z.string().url(),
         keywords: z.optional(keywords),
         maintainer: z.optional(people),
@@ -43,7 +44,7 @@ export const elpaConvertedJson = z.record(
         commit: z.optional(z.string()),
       }),
     ]),
-  ])
+  ]),
 );
 
 export const melpaDownloadCountsJson = z.record(z.number().int());
@@ -58,7 +59,7 @@ const url = z.union([
     .transform((val) => {
       if (!val.startsWith(": ")) return val;
       console.log(
-        `Warning: "${val}" starts with a colon. Automatically fixing...`
+        `Warning: "${val}" starts with a colon. Automatically fixing...`,
       );
       return val.slice(2);
     })
@@ -74,12 +75,68 @@ const url = z.union([
     .transform((val) => {
       if (val.startsWith("http")) return val;
       console.log(
-        `Warning: ${val} is missing the protocol. Automatically fixing...`
+        `Warning: ${val} is missing the protocol. Automatically fixing...`,
       );
       return "https://" + val;
     })
     .refine((val) => z.string().url().safeParse(val).success),
 ]);
+
+const melpaForgeFetcher = z.enum(["github", "gitlab", "codeberg", "sourcehut"]);
+const melpaScmFetcher = z.enum(["git", "hg"]);
+const melpaFetcher = z.union([melpaForgeFetcher, melpaScmFetcher]);
+const melpaRecipe = z.union([
+  // there are other fields, see https://github.com/melpa/melpa#recipe-format
+  // but I'm not bothering with them.
+  z.object({
+    // repo is required and url is invalid for forges
+    fetcher: melpaForgeFetcher,
+    repo: z.string(),
+  }),
+  z.object({
+    // repo is invalid and url is required for direct scm recipes
+    fetcher: melpaScmFetcher,
+    url: z.string(),
+  }),
+]);
+export const melpaRecipesJson = z.record(melpaRecipe);
+type MelpaRecipe = z.infer<typeof melpaRecipe>;
+
+/**
+ * Return a URL as a string for a given MELPA recipe.
+ */
+export function melpaRecipeToUrl(recipe: MelpaRecipe): string {
+  if (recipe.fetcher === "github") {
+    return `https://github.com/${recipe.repo}`;
+  }
+  if (recipe.fetcher === "gitlab") {
+    return `https://gitlab.com/${recipe.repo}`;
+  }
+  if (recipe.fetcher === "codeberg") {
+    return `https://codeberg.org/${recipe.repo}`;
+  }
+  if (recipe.fetcher === "sourcehut") {
+    // The "~":
+    // > Note that user names in Sourcehut URLs are prefixed with ~, that has to
+    // > be omitted in the value of this property.
+    // Why always Git:
+    // > There are no dedicated fetchers for Mercurial.
+    // > When a forge supports both Git and Mercurial, then the respective
+    // > fetcher can only be used for Git repositories. For Mercurial
+    // > repositories always use the hg fetcher.
+    return `https://git.sr.ht/~${recipe.repo}`;
+  }
+  if (recipe.fetcher === "git") {
+    return recipe.url;
+  }
+  if (recipe.fetcher === "hg") {
+    return recipe.url;
+  }
+  // TypeScript doesn't detect we've exhausted all options.
+  // The real "solution" is probably switching to ArkType (struggling through
+  // its docs) and using its `match`.
+  throw new Error("impossible");
+}
 
 export const melpaArchiveJson = z.record(
   z.object({
@@ -89,6 +146,7 @@ export const melpaArchiveJson = z.record(
     desc: z.string(),
     type: elpaPackageKind,
     props: z.object({
+      /** The URL written in the main file itself */
       url: z.optional(url),
       commit: z.optional(z.string()),
       revdesc: z.optional(z.string()),
@@ -96,7 +154,7 @@ export const melpaArchiveJson = z.record(
       maintainers: z.optional(people),
       authors: z.optional(people),
     }),
-  })
+  }),
 );
 
 type ElpaConvertedJson = z.infer<typeof elpaConvertedJson>;
@@ -113,6 +171,7 @@ const pkg = z.object({
   authors: z.optional(z.array(z.string())),
   keywords: z.optional(z.array(z.string())),
   commit: z.optional(z.string()),
+  /** The URL written in the main file itself */
   url: z.optional(url),
 });
 
