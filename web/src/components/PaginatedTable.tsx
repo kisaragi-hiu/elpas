@@ -391,8 +391,8 @@ export default function PaginatedTable({
             ))}
           </tfoot>
         </table>
-        <Pages table={table} />
       </div>
+      <Pages table={table} />
     </div>
   );
 }
