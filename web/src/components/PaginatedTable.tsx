@@ -76,6 +76,9 @@ const columns = [
   }),
   columnHelper.accessor("summary", {
     cell: (info) => info.getValue(),
+    meta: {
+      extraClass: "max-w-[60ch] truncate",
+    },
   }),
   columnHelper.accessor("ver", {
     cell: (info) => info.getValue().join("."),
@@ -99,11 +102,7 @@ const columns = [
       const urlOnArchive = archivePkgUrl(archive, info.row.getValue("name"));
 
       return urlOnArchive ? (
-        <a
-          href={urlOnArchive}
-          target="_blank"
-          className={clsx("link", "block max-w-[40ch] truncate")}
-        >
+        <a href={urlOnArchive} target="_blank" className={clsx("link")}>
           {archive}
         </a>
       ) : (
@@ -112,9 +111,6 @@ const columns = [
     },
     filterFn: (row, columnId, filterValue) => {
       return filterValue?.includes(row.getValue(columnId));
-    },
-    meta: {
-      extraClass: "w-[12ch]",
     },
   }),
   columnHelper.accessor("downloads", {
@@ -175,6 +171,25 @@ function Header<TData, TValue>({ header }: { header: Header<TData, TValue> }) {
 
 const linkDisplay = memoize((url: string) => {
   return url.replace(/^https?:\/\//, "").replace(/\/$/, "");
+  const parsed = new URL(url);
+  if (parsed.hostname === "github.com") {
+    return "github";
+  }
+  if (parsed.hostname === "hg.sr.ht" || parsed.hostname === "git.sr.ht") {
+    return "sourcehut";
+  }
+  if (parsed.hostname === "bitbucket.org") {
+    return "bitbucket";
+  }
+  if (parsed.hostname === "gitlab.com") {
+    return "gitlab";
+  }
+  if (parsed.hostname === "codeberg.org") {
+    return "codeberg";
+  }
+  if (parsed.hostname === "elpa.gnu.org") {
+    return "gnu elpa";
+  }
 });
 
 /**
@@ -401,7 +416,7 @@ export default function PaginatedTable({
         table={table}
       />
       <div className="overflow-x-auto">
-        <table className="mt-2 text-sm">
+        <table className="mt-2 min-w-[80%] table-fixed text-sm">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
