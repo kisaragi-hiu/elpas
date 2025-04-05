@@ -1,0 +1,7 @@
+---
+import type { HTMLAttributes } from "astro/types";
+type Props = HTMLAttributes<"a">;
+const props = Astro.props;
+---
+
+<a target="_blank" {...props}><slot /></a>

@@ -1,0 +1,24 @@
+---
+import Layout from "$l/Layout.astro";
+---
+
+<Layout>
+  <main class="section mt-4 md:mt-16 [&_p]:my-2">
+    <h1 class="text-3xl">About</h1>
+    <p>
+      This is a centuralized listing of multiple Emacs Lisp package archives.
+      The goal is to be able to look up Emacs packages in the browser even when
+      those packages aren't all on MELPA.
+    </p>
+    <p>
+      This is <em>not</em> an ELPA in and of itself.
+    </p>
+    <h2 class="text-3xl">Usage</h2>
+    <p>Search through package name or summary by typing in the filter bar.</p>
+    <p>
+      Use the chips to select which archives to show. By default MELPA Stable is
+      deselected. This selection is persisted in the browser.
+    </p>
+    <a class="link" href="/">Back to listing</a>
+  </main>
+</Layout>
