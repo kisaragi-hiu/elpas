@@ -184,7 +184,8 @@ function Pages<T>({ table }: { table: Table<T> }) {
         <img className="inline size-5" src={biChevronLeft.src} />
       </button>
       <span className="w-[15ch] px-3 py-2 text-center text-sm font-semibold text-gray-700">
-        page {table.getState().pagination.pageIndex + 1}/{table.getPageCount()}
+        page {table.getState().pagination.pageIndex + 1}/
+        {Math.max(table.getPageCount(), 1)}
       </span>
       <button
         disabled={!table.getCanNextPage()}
@@ -284,6 +285,8 @@ export default function PaginatedTable({
     );
   }, [archiveFiltering]);
 
+  const matchedEntryCount = table.getPrePaginationRowModel().rows.length;
+
   return (
     <div>
       <div>
@@ -339,9 +342,7 @@ export default function PaginatedTable({
           ))}
         </div>
       </div>
-      <div className="my-2">
-        {table.getPrePaginationRowModel().rows.length} matching entries
-      </div>
+      <div className="my-2">{matchedEntryCount} matching entries</div>
       <Pages table={table} />
       <div className="overflow-x-auto">
         <table className="mt-2 text-sm">
@@ -392,7 +393,7 @@ export default function PaginatedTable({
           </tfoot>
         </table>
       </div>
-      <Pages table={table} />
+      {matchedEntryCount !== 0 && <Pages table={table} />}
     </div>
   );
 }
