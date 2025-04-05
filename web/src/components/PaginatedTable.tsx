@@ -235,7 +235,7 @@ export default function PaginatedTable({
   filter = true,
 }: {
   data: Pkg[];
-  filter: boolean;
+  filter?: boolean;
 }) {
   // Hook up archive filtering state
   const archives = useMemo(() => {
