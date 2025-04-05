@@ -1,5 +1,5 @@
 build:
-	npx astro build
+	bunx --bun astro build
 
 dev:
-	npx astro dev
+	bunx --bun astro dev
