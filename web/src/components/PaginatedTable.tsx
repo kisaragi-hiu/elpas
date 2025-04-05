@@ -1,6 +1,6 @@
 // DONE: sorting buttons
 // DONE: filtering input, searching through name and summary
-// TODO: link to source ELPA
+// DONE: link to source ELPA
 // DONE: link to package URL
 // DONE: pagination
 // DONE: enable/disable archives, keep melpa stable disabled by default
@@ -29,6 +29,7 @@ import {
 } from "@tanstack/react-table";
 import useLocalStorageState from "use-local-storage-state";
 import type { Pkg } from "$data/schema.ts";
+import { archivePkgUrl } from "$data/schema.ts";
 import { versionListEqual, versionListLessThan } from "$data/versionList.ts";
 import { useState, useMemo, useEffect } from "react";
 import clsx from "clsx";
@@ -89,7 +90,22 @@ const columns = [
   }),
   columnHelper.accessor("archive", {
     enableGlobalFilter: false,
-    cell: (info) => info.getValue(),
+    cell: (info) => {
+      const archive = info.getValue();
+      const urlOnArchive = archivePkgUrl(archive, info.row.getValue("name"));
+
+      return urlOnArchive ? (
+        <a
+          href={urlOnArchive}
+          target="_blank"
+          className={clsx("link", "block max-w-[40ch] truncate")}
+        >
+          {archive}
+        </a>
+      ) : (
+        archive
+      );
+    },
     filterFn: (row, columnId, filterValue) => {
       return filterValue?.includes(row.getValue(columnId));
     },
