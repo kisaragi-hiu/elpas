@@ -164,9 +164,9 @@ function Pages<T>({ table }: { table: Table<T> }) {
     <nav
       aria-label="Pagination"
       className={clsx(
-        "isolate inline-flex rounded-md",
+        "isolate inline-flex gap-2 rounded-md",
         "[&>button]:btn [&>button]:inline-flex [&>button]:items-center [&>button]:rounded-md [&>button]:p-2",
-        "[&>button]:hover:bg-stone-200",
+        "[&>button]:bg-gray-200 [&>button]:hover:bg-gray-100 [&>button]:disabled:hover:bg-gray-200",
       )}
     >
       <button
@@ -183,7 +183,7 @@ function Pages<T>({ table }: { table: Table<T> }) {
         <span className="sr-only">Previous</span>
         <img className="inline size-5" src={biChevronLeft.src} />
       </button>
-      <span className="inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700">
+      <span className="w-[15ch] px-3 py-2 text-center text-sm font-semibold text-gray-700">
         page {table.getState().pagination.pageIndex + 1}/{table.getPageCount()}
       </span>
       <button
@@ -328,8 +328,9 @@ export default function PaginatedTable({
                 className={clsx(
                   "cursor-pointer select-none",
                   "rounded-lg px-2 py-1",
-                  "bg-gray-200",
-                  "peer-checked:bg-gray-800 peer-checked:text-white",
+                  "bg-gray-200 hover:bg-gray-100",
+                  "peer-checked:bg-gray-800 peer-checked:hover:bg-gray-700",
+                  "peer-checked:text-white",
                 )}
               >
                 {archive}
