@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @utility link {
-  @apply text-blue-600 dark:text-blue-500;
+  @apply text-blue-600 dark:text-blue-400;
   @apply hover:underline;
 }
 
