@@ -283,6 +283,8 @@ export default function PaginatedTable({
   return (
     <div>
       <div>
+        {" "}
+        {/* Input and filter buttons */}
         {/* Input style from https://tailwindcss.com/plus/ui-blocks/application-ui/forms/input-groups */}
         <div
           className={clsx(
@@ -291,11 +293,9 @@ export default function PaginatedTable({
           )}
         >
           <input
-            id="price"
-            name="price"
             type="text"
             placeholder="Filter packages by name or summary..."
-            className="block min-w-0 grow px-2 py-1.5 text-lg focus:outline-none sm:text-sm/6"
+            className="block min-w-0 grow px-2 py-1.5 focus:outline-none"
             onChange={(e) => {
               // Synchronize with the external-to-react JS variable
               // This is to expose it to be used in the sorting predicate
@@ -304,9 +304,9 @@ export default function PaginatedTable({
             }}
           />
         </div>
-        <div className="mt-2 flex flex-wrap gap-2">
+        <div className="mt-3 flex flex-wrap space-y-3 space-x-2">
           {archives.map((archive) => (
-            <label key={archive} className="select-none">
+            <div key={archive}>
               <input
                 type="checkbox"
                 checked={archiveFiltering[archive]}
@@ -316,10 +316,21 @@ export default function PaginatedTable({
                     [archive]: e.target.checked,
                   });
                 }}
-                className=""
+                className="peer sr-only"
+                id={`check-${archive}`}
               ></input>
-              {archive}
-            </label>
+              <label
+                htmlFor={`check-${archive}`}
+                className={clsx(
+                  "cursor-pointer select-none",
+                  "rounded-lg px-2 py-1",
+                  "bg-gray-200",
+                  "peer-checked:bg-gray-800 peer-checked:text-white",
+                )}
+              >
+                {archive}
+              </label>
+            </div>
           ))}
         </div>
       </div>
