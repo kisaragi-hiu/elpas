@@ -13,8 +13,9 @@ import biChevronRight from "bootstrap-icons/icons/chevron-right.svg";
 import biChevronLeft from "bootstrap-icons/icons/chevron-left.svg";
 import biChevronBarRight from "bootstrap-icons/icons/chevron-bar-right.svg";
 import biChevronBarLeft from "bootstrap-icons/icons/chevron-bar-left.svg";
+
 import {
-  useReactTable,
+  createSolidTable,
   getCoreRowModel,
   getSortedRowModel,
   getPaginationRowModel,
@@ -26,13 +27,14 @@ import {
   type PaginationState,
   type Table,
   getFilteredRowModel,
-} from "@tanstack/react-table";
-import useLocalStorageState from "use-local-storage-state";
+} from "@tanstack/solid-table";
+import { makePersisted } from "@solid-primitives/storage";
+import { createSignal, createEffect, For, mergeProps } from "solid-js";
+import clsx from "clsx";
+
 import type { Pkg } from "$data/schema.ts";
 import { archivePkgUrl } from "$data/schema.ts";
 import { versionListEqual, versionListLessThan } from "$data/versionList.ts";
-import { useState, useMemo, useEffect, memo } from "react";
-import clsx from "clsx";
 
 // HACK: a module-level variable that is visible to the sorting predicate. This
 // might be the only way to sort better matches before others.
@@ -42,7 +44,7 @@ const columnHelper = createColumnHelper<Pkg>();
 const columns = [
   columnHelper.accessor("name", {
     cell: (info) => (
-      <a className="link" href={`/package/${info.getValue()}`}>
+      <a class="link" href={`/package/${info.getValue()}`}>
         {info.getValue()}
       </a>
     ),
@@ -98,7 +100,7 @@ const columns = [
         <a
           href={urlOnArchive}
           target="_blank"
-          className={clsx("link", "block max-w-[40ch] truncate")}
+          class={clsx("link", "block max-w-[40ch] truncate")}
         >
           {archive}
         </a>
@@ -133,7 +135,7 @@ const columns = [
         <a
           href={info.getValue()}
           target="_blank"
-          className={clsx("link", "block max-w-[40ch] truncate")}
+          class={clsx("link", "block max-w-[40ch] truncate")}
         >
           {linkDisplay(url)}
         </a>
@@ -144,24 +146,20 @@ const columns = [
 
 function SortIndicator({ status }: { status: SortDirection | false }) {
   if (status === "asc") {
-    return <img className="inline" src={biChevronUp.src} />;
+    return <img class="inline" src={biChevronUp.src} />;
   } else if (status === "desc") {
-    return <img className="inline" src={biChevronDown.src} />;
+    return <img class="inline" src={biChevronDown.src} />;
   } else {
     return null;
   }
 }
 
-const Header = memo(function Header<TData, TValue>({
-  header,
-}: {
-  header: Header<TData, TValue>;
-}) {
+function Header<TData, TValue>({ header }: { header: Header<TData, TValue> }) {
   if (header.isPlaceholder) return null;
   const canSort = header.column.getCanSort();
   return (
     <button
-      className={canSort ? "btn" : ""}
+      class={canSort ? "btn" : ""}
       onClick={header.column.getToggleSortingHandler()}
       title={(header.column.columnDef.meta as { title?: string })?.title}
     >
@@ -169,7 +167,7 @@ const Header = memo(function Header<TData, TValue>({
       <SortIndicator status={header.column.getIsSorted()} />
     </button>
   );
-});
+}
 
 function linkDisplay(url: string) {
   return url.replace(/^https?:\/\//, "").replace(/\/$/, "");
@@ -182,13 +180,7 @@ function linkDisplay(url: string) {
  * component read from things that are not in its input (ie. to make sure it is
  * pure).
  */
-function Pages<T>({
-  canPrevious,
-  canNext,
-  pageIndex,
-  pageCount,
-  table,
-}: {
+function Pages<T>(props: {
   canPrevious: boolean;
   canNext: boolean;
   pageIndex: number;
@@ -202,78 +194,84 @@ function Pages<T>({
   return (
     <nav
       aria-label="Pagination"
-      className={clsx(
+      class={clsx(
         "isolate inline-flex gap-2 rounded-md",
         "[&>button]:btn [&>button]:btn-style [&>button]:p-2",
       )}
     >
-      <button disabled={!canPrevious} onClick={() => table.firstPage()}>
-        <span className="sr-only">First</span>
-        <img className="inline size-5" src={biChevronBarLeft.src} />
+      <button
+        disabled={!props.canPrevious}
+        onClick={() => props.table.firstPage()}
+      >
+        <span class="sr-only">First</span>
+        <img class="inline size-5" src={biChevronBarLeft.src} />
       </button>
-      <button disabled={!canPrevious} onClick={() => table.previousPage()}>
-        <span className="sr-only">Previous</span>
-        <img className="inline size-5" src={biChevronLeft.src} />
+      <button
+        disabled={!props.canPrevious}
+        onClick={() => props.table.previousPage()}
+      >
+        <span class="sr-only">Previous</span>
+        <img class="inline size-5" src={biChevronLeft.src} />
       </button>
-      <span className="w-[15ch] px-3 py-2 text-center text-sm font-semibold text-gray-700">
-        page {pageIndex + 1}/{Math.max(pageCount, 1)}
+      <span class="w-[15ch] px-3 py-2 text-center text-sm font-semibold text-gray-700">
+        page {props.pageIndex + 1}/{Math.max(props.pageCount, 1)}
       </span>
-      <button disabled={!canNext} onClick={() => table.nextPage()}>
-        <span className="sr-only">Next</span>
-        <img className="inline size-5" src={biChevronRight.src} />
+      <button disabled={!props.canNext} onClick={() => props.table.nextPage()}>
+        <span class="sr-only">Next</span>
+        <img class="inline size-5" src={biChevronRight.src} />
       </button>
-      <button disabled={!canNext} onClick={() => table.lastPage()}>
-        <span className="sr-only">Last</span>
-        <img className="inline size-5" src={biChevronBarRight.src} />
+      <button disabled={!props.canNext} onClick={() => props.table.lastPage()}>
+        <span class="sr-only">Last</span>
+        <img class="inline size-5" src={biChevronBarRight.src} />
       </button>
     </nav>
   );
 }
 
-export default function PaginatedTable({
-  data,
-  filter = true,
-}: {
+export default function PaginatedTable(props: {
   data: Pkg[];
-  filter: boolean;
+  filter?: boolean;
 }) {
+  // The first object is used as the default values.
+  const finalProps = mergeProps({ filter: true }, props);
   // Hook up archive filtering state
-  const archives = useMemo(() => {
+  const archives = (() => {
     // FIXME: use provided column faceting features instead of this
     const archiveSet = new Set<string>();
-    for (const row of data) {
+    for (const row of finalProps.data) {
       archiveSet.add(row.archive);
     }
     return [...archiveSet];
-  }, [data]);
-  const [
-    archiveFiltering,
-    setArchiveFiltering,
-    { removeItem: resetArchiveFiltering },
-  ] = useLocalStorageState("archiveFiltering", {
-    defaultValue: Object.fromEntries(
-      archives.map((archive) => [archive, archive !== "melpa-stable"]),
-    ),
-  });
-  useEffect(() => {
-    if (Object.keys(archiveFiltering).length !== archives.length) {
+  })();
+  const initArchiveFiltering = Object.fromEntries(
+    archives.map((archive) => [archive, archive !== "melpa-stable"]),
+  );
+  const [archiveFiltering, setArchiveFiltering] = makePersisted(
+    createSignal(initArchiveFiltering, { equals: false }),
+    { name: "archiveFiltering" },
+  );
+  function resetArchiveFiltering() {
+    setArchiveFiltering(initArchiveFiltering);
+  }
+  createEffect(() => {
+    if (Object.keys(archiveFiltering()).length !== archives.length) {
       console.log(
         "localStorage archiveFiltering length mismatch, resetting filtering preferences",
       );
       resetArchiveFiltering();
     }
-  }, [archiveFiltering, archives]);
+  });
   // Hook up pagination
-  const [pagination, setPagination] = useState({
+  const [pagination, setPagination] = createSignal({
     pageIndex: 0,
     pageSize: 200,
   } as PaginationState);
 
-  const [globalFilterState, setGlobalFilterState] = useState("");
+  const [globalFilterState, setGlobalFilterState] = createSignal("");
 
   // Create the table instance
-  const table = useReactTable({
-    data: data,
+  const table = createSolidTable({
+    data: finalProps.data,
     columns: columns,
     getCoreRowModel: getCoreRowModel(),
 
@@ -292,9 +290,16 @@ export default function PaginatedTable({
     globalFilterFn: "includesString",
     onGlobalFilterChange: setGlobalFilterState,
 
-    state: { pagination, globalFilter: globalFilterState },
+    state: {
+      get pagination() {
+        return pagination();
+      },
+      get globalFilter() {
+        return globalFilterState();
+      },
+    },
   });
-  useEffect(() => {
+  createEffect(() => {
     const archiveColumn = table.getColumn("archive");
     if (archiveColumn === undefined) {
       return;
@@ -304,13 +309,13 @@ export default function PaginatedTable({
       // -> [["a", true], ["b", false]] (entries array for filtering)
       // -> [["a", true]] (only keep entries whose value is truthy)
       // -> ["a"] (only keep keys)
-      Object.entries(archiveFiltering)
+      Object.entries(archiveFiltering())
         .filter(([_k, v]) => v)
         .map(([k, _v]) => k),
     );
-  }, [archiveFiltering]);
+  });
 
-  const matchedEntryCount = table.getPrePaginationRowModel().rows.length;
+  const matchedEntryCount = () => table.getPrePaginationRowModel().rows.length;
 
   return (
     <div>
@@ -318,9 +323,9 @@ export default function PaginatedTable({
         {" "}
         {/* Input and filter buttons */}
         {/* Input style from https://tailwindcss.com/plus/ui-blocks/application-ui/forms/input-groups */}
-        {filter && (
+        {finalProps.filter && (
           <div
-            className={clsx(
+            class={clsx(
               "flex items-center rounded-md bg-white outline-1 -outline-offset-1 outline-gray-300",
               "has-[input:focus-within]:outline-2 has-[input:focus-within]:-outline-offset-2 has-[input:focus-within]:outline-blue-600",
             )}
@@ -328,8 +333,8 @@ export default function PaginatedTable({
             <input
               type="text"
               placeholder="Filter packages by name or summary..."
-              className="block min-w-0 grow px-2 py-1.5 focus:outline-none"
-              onChange={(e) => {
+              class="block min-w-0 grow px-2 py-1.5 focus:outline-none"
+              onInput={(e) => {
                 // Synchronize with the external-to-react JS variable
                 // This is to expose it to be used in the sorting predicate
                 globalFilterModuleVar = `${e.target.value}`;
@@ -339,39 +344,41 @@ export default function PaginatedTable({
           </div>
         )}
         <div>
-          <div className="mt-3 flex flex-wrap space-y-3 space-x-2">
-            {archives.map((archive) => (
-              <div key={archive}>
-                <input
-                  type="checkbox"
-                  checked={archiveFiltering[archive]}
-                  onChange={(e) => {
-                    setArchiveFiltering({
-                      ...archiveFiltering,
-                      [archive]: e.target.checked,
-                    });
-                  }}
-                  className="peer sr-only"
-                  id={`check-${archive}`}
-                ></input>
-                <label
-                  htmlFor={`check-${archive}`}
-                  className={clsx(
-                    "cursor-pointer select-none",
-                    "rounded-lg px-2 py-1",
-                    "bg-gray-200 hover:bg-gray-100",
-                    "peer-checked:bg-gray-800 peer-checked:hover:bg-gray-700",
-                    "peer-checked:text-white",
-                  )}
-                >
-                  {archive}
-                </label>
-              </div>
-            ))}
+          <div class="mt-3 flex flex-wrap space-y-3 space-x-2">
+            <For each={archives}>
+              {(archive) => (
+                <div>
+                  <input
+                    type="checkbox"
+                    checked={archiveFiltering()[archive]}
+                    onInput={(e) => {
+                      setArchiveFiltering((obj) => {
+                        obj[archive] = e.target.checked;
+                        return obj;
+                      });
+                    }}
+                    class="peer sr-only"
+                    id={`check-${archive}`}
+                  ></input>
+                  <label
+                    for={`check-${archive}`}
+                    class={clsx(
+                      "cursor-pointer select-none",
+                      "rounded-lg px-2 py-1",
+                      "bg-gray-200 hover:bg-gray-100",
+                      "peer-checked:bg-gray-800 peer-checked:hover:bg-gray-700",
+                      "peer-checked:text-white",
+                    )}
+                  >
+                    {archive}
+                  </label>
+                </div>
+              )}
+            </For>
           </div>
-          <div className="flex flex-wrap space-x-2">
+          <div class="flex flex-wrap space-x-2">
             <button
-              className="btn btn-style p-1"
+              class="btn btn-style p-1"
               onClick={() => {
                 setArchiveFiltering(
                   Object.fromEntries(
@@ -383,7 +390,7 @@ export default function PaginatedTable({
               deselect all
             </button>
             <button
-              className="btn btn-style px-2 py-0"
+              class="btn btn-style px-2 py-0"
               onClick={resetArchiveFiltering}
             >
               reset to default
@@ -391,7 +398,7 @@ export default function PaginatedTable({
           </div>
         </div>
       </div>
-      <div className="mb-2">{matchedEntryCount} matching entries</div>
+      <div class="mb-2">{matchedEntryCount()} matching entries</div>
       <Pages
         canPrevious={table.getCanPreviousPage()}
         canNext={table.getCanNextPage()}
@@ -399,56 +406,73 @@ export default function PaginatedTable({
         pageCount={table.getPageCount()}
         table={table}
       />
-      <div className="overflow-x-auto">
-        <table className="mt-2 text-sm">
+      <div class="overflow-x-auto">
+        <table class="mt-2 text-sm">
           <thead>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <th key={header.id} className="pr-4 text-left">
-                    <Header header={header} />
-                  </th>
-                ))}
-              </tr>
-            ))}
+            <For each={table.getHeaderGroups()}>
+              {(headerGroup) => (
+                <tr>
+                  <For each={headerGroup.headers}>
+                    {(header) => (
+                      <th class="pr-4 text-left">
+                        <Header header={header} />
+                      </th>
+                    )}
+                  </For>
+                </tr>
+              )}
+            </For>
           </thead>
           <tbody>
-            {table.getRowModel().rows.map((row) => (
-              <tr key={row.id}>
-                {row.getVisibleCells().map((cell) => (
-                  <td
-                    key={cell.id}
-                    className={clsx(
-                      "py-1 pr-4",
-                      (cell.column.columnDef.meta as { extraClass?: string })
-                        ?.extraClass,
+            <For each={table.getRowModel().rows}>
+              {(row) => (
+                <tr>
+                  <For each={row.getVisibleCells()}>
+                    {(cell) => (
+                      <td
+                        class={clsx(
+                          "py-1 pr-4",
+                          (
+                            cell.column.columnDef.meta as {
+                              extraClass?: string;
+                            }
+                          )?.extraClass,
+                        )}
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </td>
                     )}
-                  >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))}
+                  </For>
+                </tr>
+              )}
+            </For>
           </tbody>
           <tfoot>
-            {table.getFooterGroups().map((footerGroup) => (
-              <tr key={footerGroup.id}>
-                {footerGroup.headers.map((header) => (
-                  <th key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.footer,
-                          header.getContext(),
-                        )}
-                  </th>
-                ))}
-              </tr>
-            ))}
+            <For each={table.getFooterGroups()}>
+              {(footerGroup) => (
+                <tr>
+                  <For each={footerGroup.headers}>
+                    {(header) => (
+                      <th>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.footer,
+                              header.getContext(),
+                            )}
+                      </th>
+                    )}
+                  </For>
+                </tr>
+              )}
+            </For>
           </tfoot>
         </table>
       </div>
-      {matchedEntryCount !== 0 && (
+      {matchedEntryCount() !== 0 && (
         <Pages
           canPrevious={table.getCanPreviousPage()}
           canNext={table.getCanNextPage()}

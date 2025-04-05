@@ -12,7 +12,7 @@
       "$c/*": ["src/components/*"],
       "$l/*": ["src/layouts/*"]
     },
-    "jsx": "react-jsx",
-    "jsxImportSource": "react"
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js"
   }
 }
