@@ -1,6 +1,6 @@
 ---
 import { archivePkgUrl } from "$data/schema.ts";
-import { pkgNameIndex } from "$data/data.ts";
+import { pkgNameIndex, keywordPkgIndex } from "$data/data.ts";
 const { pkgName } = Astro.params;
 export function getStaticPaths() {
   return Object.entries(pkgNameIndex).flatMap(([name, _pkgs]) => ({
@@ -55,7 +55,18 @@ import Layout from "$l/Layout.astro";
             </div>
             <div>
               <dt>Keywords</dt>
-              <dd>{pkg.keywords ? pkg.keywords.join(",") : "None"}</dd>
+              <dd>
+                {pkg.keywords
+                  ? pkg.keywords.map((keyword) => (
+                      <div>
+                        <a class="link" href={`/keyword/${keyword}`}>
+                          {keyword}
+                        </a>{" "}
+                        ({keywordPkgIndex[keyword].length})
+                      </div>
+                    ))
+                  : "None"}
+              </dd>
             </div>
             <div>
               <dt>Downloads</dt>

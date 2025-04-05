@@ -207,10 +207,10 @@ function Pages<T>({ table }: { table: Table<T> }) {
 
 export default function PaginatedTable({
   data,
-  pageSize,
+  filter = true,
 }: {
   data: Pkg[];
-  pageSize: number;
+  filter: boolean;
 }) {
   // Hook up archive filtering state
   const archives = useMemo(() => {
@@ -241,7 +241,7 @@ export default function PaginatedTable({
   // Hook up pagination
   const [pagination, setPagination] = useState({
     pageIndex: 0,
-    pageSize: pageSize,
+    pageSize: 50,
   } as PaginationState);
 
   const [globalFilterState, setGlobalFilterState] = useState("");
@@ -293,24 +293,26 @@ export default function PaginatedTable({
         {" "}
         {/* Input and filter buttons */}
         {/* Input style from https://tailwindcss.com/plus/ui-blocks/application-ui/forms/input-groups */}
-        <div
-          className={clsx(
-            "flex items-center rounded-md bg-white outline-1 -outline-offset-1 outline-gray-300",
-            "has-[input:focus-within]:outline-2 has-[input:focus-within]:-outline-offset-2 has-[input:focus-within]:outline-blue-600",
-          )}
-        >
-          <input
-            type="text"
-            placeholder="Filter packages by name or summary..."
-            className="block min-w-0 grow px-2 py-1.5 focus:outline-none"
-            onChange={(e) => {
-              // Synchronize with the external-to-react JS variable
-              // This is to expose it to be used in the sorting predicate
-              globalFilterModuleVar = `${e.target.value}`;
-              setGlobalFilterState(globalFilterModuleVar);
-            }}
-          />
-        </div>
+        {filter && (
+          <div
+            className={clsx(
+              "flex items-center rounded-md bg-white outline-1 -outline-offset-1 outline-gray-300",
+              "has-[input:focus-within]:outline-2 has-[input:focus-within]:-outline-offset-2 has-[input:focus-within]:outline-blue-600",
+            )}
+          >
+            <input
+              type="text"
+              placeholder="Filter packages by name or summary..."
+              className="block min-w-0 grow px-2 py-1.5 focus:outline-none"
+              onChange={(e) => {
+                // Synchronize with the external-to-react JS variable
+                // This is to expose it to be used in the sorting predicate
+                globalFilterModuleVar = `${e.target.value}`;
+                setGlobalFilterState(globalFilterModuleVar);
+              }}
+            />
+          </div>
+        )}
         <div className="mt-3 flex flex-wrap space-y-3 space-x-2">
           {archives.map((archive) => (
             <div key={archive}>
@@ -342,7 +344,7 @@ export default function PaginatedTable({
           ))}
         </div>
       </div>
-      <div className="my-2">{matchedEntryCount} matching entries</div>
+      <div className="mb-2">{matchedEntryCount} matching entries</div>
       <Pages table={table} />
       <div className="overflow-x-auto">
         <table className="mt-2 text-sm">

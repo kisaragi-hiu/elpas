@@ -1,0 +1,28 @@
+---
+import { keywordPkgIndex } from "$data/data.ts";
+const { keyword } = Astro.params;
+export function getStaticPaths() {
+  return Object.entries(keywordPkgIndex).flatMap(([keyword, _pkgs]) => ({
+    params: { keyword },
+  }));
+}
+
+const pkgs = keywordPkgIndex[keyword] ?? [];
+
+import PaginatedTable from "$c/PaginatedTable.tsx";
+import Layout from "$l/Layout.astro";
+---
+
+<Layout>
+  <section class="section mt-4 mb-4 md:mt-16">
+    <h2 class="text-3xl">
+      package keyword: {keyword}
+    </h2>
+    <div>
+      <a class="link" href="/">Back to listing</a>
+    </div>
+  </section>
+  <section class="section">
+    <PaginatedTable data={pkgs} client:only="react" filter={false} />
+  </section>
+</Layout>
