@@ -47,9 +47,19 @@ import Layout from "$l/Layout.astro";
               <dt>Dependencies</dt>
               <dd>
                 {pkg.deps
-                  ? Object.entries(pkg.deps).map(
-                      ([pkg, ver]) => `${pkg} ${ver.join(".")}`,
-                    )
+                  ? Object.entries(pkg.deps).map(([name, ver]) => (
+                      <div>
+                        {/* FIXME: the fucking whitespace */}
+                        {pkgNameIndex[name] ? (
+                          <a class="link" href={`/package/${name}`}>
+                            {name}
+                          </a>
+                        ) : (
+                          name
+                        )}{" "}
+                        {ver.join(".")}
+                      </div>
+                    ))
                   : "None"}
               </dd>
             </div>
