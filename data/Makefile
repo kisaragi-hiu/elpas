@@ -1,6 +1,14 @@
 node_modules: package.json
 	bun install
 
+# I don't know if finder-known-keywords has another definition elsewhere that
+# isn't just finder.el itself. This script we're calling here simply takes Emacs
+# to read finder.el and write it out to JSON, which is messy but... works fine.
+#
+# As long as you know how it works.
+finder-known-keywords.json:
+	sh ./fetch-finder-known-keywords
+
 combined.json: cache node_modules
 	bun collectData.ts
 

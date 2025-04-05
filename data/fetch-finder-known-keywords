@@ -1,0 +1,32 @@
+#!/bin/sh
+":"; exec emacs --quick --script "$0" "$@" # -*-mode: lisp-interaction; lexical-binding: t-*-
+
+;;; Commentary:
+;; Copy the latest finder-known-keywords from Emacs source code and export it as JSON.
+
+;;; Code:
+
+(require 'url-handlers)
+(setq debug-on-error t)
+
+(defun my/fetch-latest-finder-known-keywords ()
+  "Fetch the latest `finder-known-keywords' from Emacs source code from the GitHub mirror."
+  (let ((buf (url-retrieve-synchronously "https://github.com/emacs-mirror/emacs/raw/refs/heads/master/lisp/finder.el"))
+        value)
+    (with-current-buffer (get-buffer-create "new")
+      (url-insert buf)
+      (decode-coding-region (point-min) (point-max) 'utf-8)
+      (goto-char (point-min))
+      (search-forward "defvar finder-known-keywords")
+      ;; We rely on the definition starting on the next line.
+      ;; There's no reason why it would change, but still, that's a weird thing
+      ;; to depend on.
+      (forward-line 1)
+      (setq value (read (current-buffer))))
+    ;; the value is quoted. just extract the value.
+    ;; (we don't need eval here because we know the value here is entirely
+    ;; self-quoting.)
+    (cadr value)))
+
+(with-temp-file "finder-known-keywords.json"
+  (insert (json-serialize (my/fetch-latest-finder-known-keywords))))
