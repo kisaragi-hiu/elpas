@@ -31,8 +31,9 @@ import useLocalStorageState from "use-local-storage-state";
 import type { Pkg } from "$data/schema.ts";
 import { archivePkgUrl } from "$data/schema.ts";
 import { versionListEqual, versionListLessThan } from "$data/versionList.ts";
-import { useState, useMemo, useEffect, memo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import clsx from "clsx";
+import { memoize } from "@std/cache/memoize";
 
 // HACK: a module-level variable that is visible to the sorting predicate. This
 // might be the only way to sort better matches before others.
@@ -123,6 +124,8 @@ const columns = [
     },
   }),
   columnHelper.accessor("url", {
+    // We need this off so that it's possible to search for eg. "http" and get
+    // useful results
     enableGlobalFilter: false,
     cell: (info) => {
       const url = info.getValue();
@@ -167,9 +170,9 @@ function Header<TData, TValue>({ header }: { header: Header<TData, TValue> }) {
   );
 }
 
-function linkDisplay(url: string) {
+const linkDisplay = memoize((url: string) => {
   return url.replace(/^https?:\/\//, "").replace(/\/$/, "");
-}
+});
 
 /**
  * The page numbers and switch page buttons.
