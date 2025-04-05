@@ -54,6 +54,10 @@ import Layout from "$l/Layout.astro";
               </dd>
             </div>
             <div>
+              <dt>Keywords</dt>
+              <dd>{pkg.keywords ? pkg.keywords.join(",") : "None"}</dd>
+            </div>
+            <div>
               <dt>Downloads</dt>
               <dd>{pkg.downloads || "Unknown"}</dd>
             </div>
