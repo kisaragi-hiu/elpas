@@ -77,7 +77,7 @@ const columns = [
   columnHelper.accessor("summary", {
     cell: (info) => info.getValue(),
     meta: {
-      extraClass: "max-w-[60ch] truncate",
+      extraClass: "max-w-[30ch] md:max-w-[60ch] truncate",
     },
   }),
   columnHelper.accessor("ver", {
