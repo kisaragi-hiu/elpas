@@ -1,7 +1,8 @@
 @import "tailwindcss";
 
 @utility link {
-  @apply text-blue-600 hover:underline;
+  @apply text-blue-600 dark:text-blue-500;
+  @apply hover:underline;
 }
 
 @utility btn {
@@ -9,11 +10,55 @@
   &:disabled {
     @apply cursor-auto opacity-50;
   }
+  @variant dark {
+    & > img {
+      filter: invert(100%);
+    }
+  }
+}
+
+@utility color-input {
+  @apply outline-gray-300 has-[input:focus-within]:outline-blue-600;
+  @variant dark {
+    @apply outline-stone-700 has-[input:focus-within]:outline-blue-500;
+  }
+}
+
+@utility color-bg {
+  @apply text-black dark:text-white;
+  @apply bg-[#F0F0F4] dark:bg-[#2B2B2B];
+}
+
+@utility color-bg-secondary {
+  @apply text-black dark:text-white;
+  @apply bg-gray-50 dark:bg-stone-900;
+}
+
+@utility color-secondary {
+  @apply text-gray-700 dark:text-stone-100;
+}
+
+@utility color-chip {
+  @apply bg-gray-200 text-black hover:bg-gray-100;
+  @variant peer-checked {
+    @apply bg-gray-800 text-white hover:bg-gray-700;
+  }
+
+  @variant dark {
+    @apply bg-stone-800 text-white hover:bg-stone-700;
+    @variant peer-checked {
+      @apply bg-stone-200 text-black hover:bg-stone-100;
+    }
+  }
 }
 
 @utility btn-style {
   @apply inline-flex items-center rounded-md;
-  @apply bg-gray-200 hover:bg-gray-100 disabled:hover:bg-gray-200;
+  @apply bg-gray-200 text-black hover:bg-gray-100 disabled:hover:bg-gray-200;
+  @variant dark {
+    @apply bg-stone-800 text-white hover:bg-stone-700;
+    @apply disabled:hover:bg-gray-700;
+  }
 }
 
 @utility section {

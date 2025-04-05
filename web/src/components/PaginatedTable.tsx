@@ -215,7 +215,7 @@ function Pages<T>({
         <span className="sr-only">Previous</span>
         <img className="inline size-5" src={biChevronLeft.src} />
       </button>
-      <span className="w-[15ch] px-3 py-2 text-center text-sm font-semibold text-gray-700">
+      <span className="color-secondary w-[15ch] px-3 py-2 text-center text-sm font-semibold">
         page {pageIndex + 1}/{Math.max(pageCount, 1)}
       </span>
       <button disabled={!canNext} onClick={() => table.nextPage()}>
@@ -321,14 +321,15 @@ export default function PaginatedTable({
         {filter && (
           <div
             className={clsx(
-              "flex items-center rounded-md bg-white outline-1 -outline-offset-1 outline-gray-300",
-              "has-[input:focus-within]:outline-2 has-[input:focus-within]:-outline-offset-2 has-[input:focus-within]:outline-blue-600",
+              "color-input",
+              "flex items-center rounded-md bg-white outline-1 -outline-offset-1",
+              "has-[input:focus-within]:outline-2 has-[input:focus-within]:-outline-offset-2",
             )}
           >
             <input
               type="text"
               placeholder="Filter packages by name or summary..."
-              className="block min-w-0 grow px-2 py-1.5 focus:outline-none"
+              className="color-bg-secondary block min-w-0 grow rounded-md px-2 py-1.5 focus:outline-none"
               onChange={(e) => {
                 // Synchronize with the external-to-react JS variable
                 // This is to expose it to be used in the sorting predicate
@@ -359,9 +360,7 @@ export default function PaginatedTable({
                   className={clsx(
                     "cursor-pointer select-none",
                     "rounded-lg px-2 py-1",
-                    "bg-gray-200 hover:bg-gray-100",
-                    "peer-checked:bg-gray-800 peer-checked:hover:bg-gray-700",
-                    "peer-checked:text-white",
+                    "color-chip",
                   )}
                 >
                   {archive}
