@@ -1,4 +1,7 @@
-combined.json: cache
+node_modules: package.json
+	bun install
+
+combined.json: cache node_modules
 	bun data.ts
 
 cache: cache/gnu.json cache/nongnu.json cache/org.json cache/jcs.json
