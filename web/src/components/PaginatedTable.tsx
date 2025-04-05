@@ -31,7 +31,7 @@ import useLocalStorageState from "use-local-storage-state";
 import type { Pkg } from "$data/schema.ts";
 import { archivePkgUrl } from "$data/schema.ts";
 import { versionListEqual, versionListLessThan } from "$data/versionList.ts";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, memo } from "react";
 import clsx from "clsx";
 
 // HACK: a module-level variable that is visible to the sorting predicate. This
@@ -152,7 +152,11 @@ function SortIndicator({ status }: { status: SortDirection | false }) {
   }
 }
 
-function Header<TData, TValue>({ header }: { header: Header<TData, TValue> }) {
+const Header = memo(function Header<TData, TValue>({
+  header,
+}: {
+  header: Header<TData, TValue>;
+}) {
   if (header.isPlaceholder) return null;
   const canSort = header.column.getCanSort();
   return (
@@ -165,7 +169,7 @@ function Header<TData, TValue>({ header }: { header: Header<TData, TValue> }) {
       <SortIndicator status={header.column.getIsSorted()} />
     </button>
   );
-}
+});
 
 function linkDisplay(url: string) {
   return url.replace(/^https?:\/\//, "").replace(/\/$/, "");
