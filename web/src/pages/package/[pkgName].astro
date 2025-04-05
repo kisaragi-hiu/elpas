@@ -49,7 +49,6 @@ import Layout from "$l/Layout.astro";
                 {pkg.deps
                   ? Object.entries(pkg.deps).map(([name, ver]) => (
                       <div>
-                        {/* FIXME: the fucking whitespace */}
                         {pkgNameIndex[name] ? (
                           // prettier-ignore
                           <a class="link" href={`/package/${name}`}>{name}</a>
