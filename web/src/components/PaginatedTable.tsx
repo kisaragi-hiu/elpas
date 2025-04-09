@@ -28,6 +28,8 @@ import {
   getFilteredRowModel,
 } from "@tanstack/react-table";
 import useLocalStorageState from "use-local-storage-state";
+import { createParser, parseAsIndex, useQueryState } from "nuqs";
+import { NuqsAdapter } from "nuqs/adapters/react";
 import type { Pkg } from "$data/schema.ts";
 import { archivePkgUrl } from "$data/schema.ts";
 import { versionListEqual, versionListLessThan } from "$data/versionList.ts";
@@ -272,13 +274,7 @@ function Pages<T>({
   );
 }
 
-export default function PaginatedTable({
-  data,
-  filter = true,
-}: {
-  data: Pkg[];
-  filter?: boolean;
-}) {
+function TableBody({ data, filter = true }: { data: Pkg[]; filter?: boolean }) {
   // Hook up archive filtering state
   const archives = useMemo(() => {
     // FIXME: use provided column faceting features instead of this
@@ -305,11 +301,27 @@ export default function PaginatedTable({
       resetArchiveFiltering();
     }
   }, [archiveFiltering, archives]);
+
   // Hook up pagination
-  const [pagination, setPagination] = useState({
-    pageIndex: 0,
-    pageSize: 200,
-  } as PaginationState);
+  // We only want page index to be in the query string (as a page number)
+  const [pagination, setPagination] = useQueryState(
+    "p",
+    createParser({
+      parse: (v) => {
+        // v: something like "3"
+        const int = parseAsIndex.parse(v);
+        // slap the object in here
+        return {
+          pageIndex: int ?? 0,
+          pageSize: 200,
+        } as PaginationState;
+      },
+      serialize: (v) => parseAsIndex.serialize(v.pageIndex),
+    }).withDefault({
+      pageIndex: 0,
+      pageSize: 200,
+    } as PaginationState),
+  );
 
   const [globalFilterState, setGlobalFilterState] = useState("");
 
@@ -334,7 +346,10 @@ export default function PaginatedTable({
     globalFilterFn: "includesString",
     onGlobalFilterChange: setGlobalFilterState,
 
-    state: { pagination, globalFilter: globalFilterState },
+    state: {
+      pagination,
+      globalFilter: globalFilterState,
+    },
   });
   useEffect(() => {
     const archiveColumn = table.getColumn("archive");
@@ -503,5 +518,21 @@ export default function PaginatedTable({
         />
       )}
     </div>
+  );
+}
+
+export default function PaginatedTable({
+  data,
+  filter = true,
+}: {
+  data: Pkg[];
+  filter?: boolean;
+}) {
+  // We assume this is the only component taking control over the URL search params.
+  // This assumption currently holds true.
+  return (
+    <NuqsAdapter>
+      <TableBody data={data} filter={filter}></TableBody>
+    </NuqsAdapter>
   );
 }
