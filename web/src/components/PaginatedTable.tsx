@@ -359,7 +359,8 @@ export default function PaginatedTable({
       // This is to expose it to be used in the sorting predicate
       globalFilterModuleVar = `${e.target.value}`;
       setGlobalFilterState(globalFilterModuleVar);
-    }, []),
+    }, 100),
+    [],
   );
 
   return (
