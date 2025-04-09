@@ -225,22 +225,46 @@ function Pages<T>({
         "[&>button]:btn [&>button]:btn-style [&>button]:p-2",
       )}
     >
-      <button disabled={!canPrevious} onClick={() => table.firstPage()}>
+      <button
+        disabled={!canPrevious}
+        onClick={() => {
+          table.firstPage();
+          scrollTo(0, 0);
+        }}
+      >
         <span className="sr-only">First</span>
         <img className="inline size-5" src={biChevronBarLeft.src} />
       </button>
-      <button disabled={!canPrevious} onClick={() => table.previousPage()}>
+      <button
+        disabled={!canPrevious}
+        onClick={() => {
+          table.previousPage();
+          scrollTo(0, 0);
+        }}
+      >
         <span className="sr-only">Previous</span>
         <img className="inline size-5" src={biChevronLeft.src} />
       </button>
       <span className="color-secondary w-[15ch] px-3 py-2 text-center text-sm font-semibold">
         page {pageIndex + 1}/{Math.max(pageCount, 1)}
       </span>
-      <button disabled={!canNext} onClick={() => table.nextPage()}>
+      <button
+        disabled={!canNext}
+        onClick={() => {
+          table.nextPage();
+          scrollTo(0, 0);
+        }}
+      >
         <span className="sr-only">Next</span>
         <img className="inline size-5" src={biChevronRight.src} />
       </button>
-      <button disabled={!canNext} onClick={() => table.lastPage()}>
+      <button
+        disabled={!canNext}
+        onClick={() => {
+          table.lastPage();
+          scrollTo(0, 0);
+        }}
+      >
         <span className="sr-only">Last</span>
         <img className="inline size-5" src={biChevronBarRight.src} />
       </button>
