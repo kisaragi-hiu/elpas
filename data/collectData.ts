@@ -185,6 +185,9 @@ function insertMelpas() {
   }
 }
 
+/**
+ * Convert an array of {name,email} objects to strings.
+ */
 function epkgsPeopleToStrings(people: EpkgsSqlPeople) {
   return people.map(({ name, email }) => {
     const parsedName =
@@ -262,13 +265,14 @@ WHERE feature IN (
         .values(name)
         .map((v: unknown[]) => v[0]),
     );
-    console.log(name);
     const newPkg: Pkg = {
       name: stringOfJsonString.parse(name),
       archive: "builtin",
       ver: [],
       // Forcibly give it an empty versionList
-      deps: Object.fromEntries(deps.map((dep) => [dep, []])),
+      deps: Object.fromEntries(
+        deps.map((dep) => [stringOfJsonString.parse(dep), []]),
+      ),
       summary: stringOfJsonString.parse(epkgsBuiltinPackage.summary),
       maintainers: epkgsPeopleToStrings(maintainers),
       authors: epkgsPeopleToStrings(authors),
