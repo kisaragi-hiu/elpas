@@ -196,3 +196,52 @@ export function archivePkgUrl(archive: string, pkg: string, fallbackPkg?: Pkg) {
 }
 
 export const finderKnownKeywords = z.record(z.string());
+
+/**
+ * A string that contains JSON that, when parsed, produces a string.
+ * Modified from zod_utilz:
+ * https://github.com/JacobWeisenburger/zod_utilz/blob/4093595e5a6d95770872598ba3bc405d4e9c963b/src/stringToJSON.ts#LL4-L12C8
+ */
+export const stringOfJsonString = z
+  .string()
+  .transform((str, ctx): z.infer<ReturnType<typeof z.string>> => {
+    try {
+      const value = JSON.parse(str);
+      if (typeof value !== "string") {
+        throw "not a string";
+      }
+      return value;
+    } catch (e) {
+      if (e === "not a string") {
+        ctx.addIssue({
+          code: "custom",
+          message: "JSON does not encode a string",
+        });
+      } else {
+        ctx.addIssue({ code: "custom", message: "Invalid JSON" });
+      }
+      return z.NEVER;
+    }
+  });
+
+// We don't parse the strings as JSON just yet because we need the original
+// values for querying more values
+export const epkgsSqlBuiltinPackages = z.array(
+  z.object({
+    name: z.string(),
+    library: z.string(),
+    homepage: z.string(),
+    summary: z.string(),
+    commentary: z.string().nullable(),
+  }),
+);
+
+export const epkgsSqlStrings = z.array(z.string());
+
+export const epkgsSqlPeople = z.array(
+  z.object({
+    name: z.string().nullable(),
+    email: z.string().nullable(),
+  }),
+);
+export type EpkgsSqlPeople = z.infer<typeof epkgsSqlPeople>;

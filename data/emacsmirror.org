@@ -9,3 +9,41 @@ Download the texual representation, then import it into a new database called =e
 curl -L "https://github.com/emacsmirror/epkgs/raw/refs/heads/master/epkg.sql" > epkg.sql
 sqlite3 epkgs.sqlite '.read epkg.sql'
 #+end_src
+
+- =var_wikipage= maps emacswiki packages to their pages on emacswiki
+- =var_orphanage= shows orphanage package names and why they are in orphanage
+- =var_homepage= provides package homepages
+- =required= has info on which library requires which other features, including whether it's a soft or hard require
+- =provided= maps packages to features, and can be used to go back from features to packages
+- =packages= has repopage, homepage, mirrorpage (emacsmirror), and wikipage; so =var_wikipage= isn't necessary. It also has both summary and commentary.
+  - It also has =class=. It's named as such due to Emacs Lisp reasons (this database is actually storing Emacs Lisp values), but it provides:
+    - builtin
+    - shelved (emacsattic)
+    - wiki (on main mirror, source is emacswiki)
+    - orphaned (emacsorphanage?)
+- =builtin_libraries= has package, library (file, multiple files = multiple entries), and feature
+
+We should handle different sources here differently. There are 4, roughly:
+
+- emacsattic (but some of these are still on MELPA, right?)
+- emacsorphanage (again, some of these are still on MELPA)
+- emacswiki
+- builtin packages
+
+Builtin packages:
+
+#+begin_src js
+const pkg = z.object({
+  name: nameFromEmacsmirror,
+  archive: "builtin",
+  ver: undefined,
+  deps: ..., // emacsmirror only provides features. Map them back to packages?
+  summary: summaryFromEmacsmirror,
+  downloads: undefined,
+  maintainers: maintainersFromEmacsMirror,
+  authors: authorsFromEmacsMirror,
+  keywords: keywordsFromEmacsMirror,
+  commit: undefined,
+  url: emacsSourceRepoPlusLibraryPathFromEmacsMirror,
+});
+#+end_src
