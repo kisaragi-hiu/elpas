@@ -29,5 +29,5 @@ cache/epkg.sql:
 
 # SQLite database for read
 cache/epkgs.sqlite: cache/epkg.sql
-	[ -f cache/epkgs.sqlite ] && rm cache/epkgs.sqlite
+	rm -f cache/epkgs.sqlite
 	sqlite3 cache/epkgs.sqlite '.read cache/epkg.sql'
