@@ -328,6 +328,11 @@ function TableBody({ data, filter = true }: { data: Pkg[]; filter?: boolean }) {
     enableSorting: true,
     enableSortingRemoval: false,
     initialState: {
+      // I know you're not supposed to pass in both this and `state`, but
+      // without this the table initializes to page 1 for some reason (even
+      // though state should have already read from URL).
+      // So we're explicitly initializing the table to the right value.
+      pagination: pagination,
       sorting: [{ id: "name", desc: false }],
       columnOrder: ["archive", "name", "summary", "version"],
     },
