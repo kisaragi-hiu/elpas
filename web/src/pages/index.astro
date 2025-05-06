@@ -2,6 +2,7 @@
 import Layout from "$l/Layout.astro";
 import Out from "$c/Out.astro";
 import PaginatedTable from "$c/PaginatedTable.tsx";
+import Loading from "$c/Loading.tsx";
 import { collectedDate, packages } from "$data/data.ts";
 ---
 
@@ -25,6 +26,8 @@ import { collectedDate, packages } from "$data/data.ts";
     </p>
   </section>
   <main class="section mt-4 pb-8">
-    <PaginatedTable data={packages} client:only="react" />
+    <PaginatedTable data={packages} client:only="react">
+      <Loading slot="fallback" />
+    </PaginatedTable>
   </main>
 </Layout>
