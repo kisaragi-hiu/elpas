@@ -206,7 +206,8 @@ export const stringOfJsonString = z
   .string()
   .transform((str, ctx): z.infer<ReturnType<typeof z.string>> => {
     try {
-      const value = JSON.parse(str);
+      // JSON does not allow bare tab characters. Uh, why??
+      const value = JSON.parse(str.replaceAll("\t", ""));
       if (typeof value !== "string") {
         throw "not a string";
       }
