@@ -323,7 +323,7 @@ function TableBody({ data, filter = true }: { data: Pkg[]; filter?: boolean }) {
     } as PaginationState),
   );
 
-  const [globalFilterState, setGlobalFilterState] = useState("");
+  const [globalFilterState, setGlobalFilterState] = useQueryState("q", "");
 
   // Create the table instance
   const table = useReactTable({
