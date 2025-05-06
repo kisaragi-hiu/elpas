@@ -21,6 +21,7 @@ import {
   flexRender,
   createColumnHelper,
   sortingFns,
+  functionalUpdate,
   type Header,
   type SortDirection,
   type PaginationState,
@@ -304,24 +305,11 @@ function TableBody({ data, filter = true }: { data: Pkg[]; filter?: boolean }) {
 
   // Hook up pagination
   // We only want page index to be in the query string (as a page number)
-  const [pagination, setPagination] = useQueryState(
-    "p",
-    createParser({
-      parse: (v) => {
-        // v: something like "3"
-        const int = parseAsIndex.parse(v);
-        // slap the object in here
-        return {
-          pageIndex: int ?? 0,
-          pageSize: 200,
-        } as PaginationState;
-      },
-      serialize: (v) => parseAsIndex.serialize(v.pageIndex),
-    }).withDefault({
-      pageIndex: 0,
-      pageSize: 200,
-    } as PaginationState),
-  );
+  const [pageIndex, setPageIndex] = useQueryState("p", parseAsIndex.withDefault(0))
+  const pagination = {
+    pageIndex: pageIndex,
+    pageSize: 200,
+  } as PaginationState;
 
   const [globalFilterState, setGlobalFilterState] = useQueryState("q", "");
 
@@ -340,14 +328,19 @@ function TableBody({ data, filter = true }: { data: Pkg[]; filter?: boolean }) {
     },
 
     getPaginationRowModel: getPaginationRowModel(),
-    onPaginationChange: setPagination,
+    // https://github.com/tanstack/table/discussions/4005
+    // :skull:
+    onPaginationChange: (updater) => {
+      const newValue = functionalUpdate(updater, pagination);
+      setPageIndex(newValue.pageIndex);
+    },
 
     getFilteredRowModel: getFilteredRowModel(),
     globalFilterFn: "includesString",
     onGlobalFilterChange: setGlobalFilterState,
 
     state: {
-      pagination,
+      pagination: pagination,
       globalFilter: globalFilterState,
     },
   });
