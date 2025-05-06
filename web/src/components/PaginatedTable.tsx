@@ -305,13 +305,18 @@ function TableBody({ data, filter = true }: { data: Pkg[]; filter?: boolean }) {
 
   // Hook up pagination
   // We only want page index to be in the query string (as a page number)
-  const [pageIndex, setPageIndex] = useQueryState("p", parseAsIndex.withDefault(0))
+  const [pageIndex, setPageIndex] = useQueryState(
+    "p",
+    parseAsIndex.withDefault(0),
+  );
   const pagination = {
     pageIndex: pageIndex,
     pageSize: 200,
   } as PaginationState;
 
-  const [globalFilterState, setGlobalFilterState] = useQueryState("q", "");
+  const [globalFilterState, setGlobalFilterState] = useQueryState("q", {
+    defaultValue: "",
+  });
 
   // Create the table instance
   const table = useReactTable({
