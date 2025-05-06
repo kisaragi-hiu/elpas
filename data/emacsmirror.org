@@ -1,0 +1,11 @@
+#+title: Emacsmirror
+#+created: 2025-05-07T00:42:52+0900
+
+Reading data from emacsmirror/epkgs.
+
+Download the texual representation, then import it into a new database called =epkgs.sqlite=
+
+#+begin_src sh
+curl -L "https://github.com/emacsmirror/epkgs/raw/refs/heads/master/epkg.sql" > epkg.sql
+sqlite3 epkgs.sqlite '.read epkg.sql'
+#+end_src

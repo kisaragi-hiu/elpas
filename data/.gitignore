@@ -1,2 +1,4 @@
 combined.json
 cache/*.json
+cache/*.sql
+cache/*.sqlite

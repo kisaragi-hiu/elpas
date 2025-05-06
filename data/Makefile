@@ -12,7 +12,7 @@ finder-known-keywords.json:
 combined.json: cache node_modules
 	bun collectData.ts
 
-cache: cache/gnu.json cache/nongnu.json cache/jcs.json
+cache: cache/gnu.json cache/nongnu.json cache/jcs.json cache/epkgs.sqlite
 
 cache/gnu.json:
 	sh ./elpa-to-json cache/gnu.json "https://elpa.gnu.org/packages/"
@@ -22,3 +22,11 @@ cache/nongnu.json:
 
 cache/jcs.json:
 	sh ./elpa-to-json cache/jcs-elpa.json "https://jcs-emacs.github.io/jcs-elpa/packages/"
+
+# The textual version
+cache/epkg.sql:
+	curl -L "https://github.com/emacsmirror/epkgs/raw/refs/heads/master/epkg.sql" > cache/epkg.sql
+
+# SQLite database for read
+cache/epkgs.sqlite: cache/epkg.sql
+	sqlite3 cache/epkgs.sqlite '.read epkg.sql'
