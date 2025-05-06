@@ -396,6 +396,7 @@ function TableBody({ data, filter = true }: { data: Pkg[]; filter?: boolean }) {
               type="text"
               placeholder="Filter packages by name or summary..."
               className="color-bg-secondary block min-w-0 grow rounded-md px-2 py-1.5 focus:outline-none"
+              defaultValue={globalFilterState}
               onChange={globalFilterOnChange}
             />
           </div>
