@@ -175,25 +175,25 @@ function Header<TData, TValue>({ header }: { header: Header<TData, TValue> }) {
 
 const linkDisplay = memoize((url: string) => {
   return url.replace(/^https?:\/\//, "").replace(/\/$/, "");
-  const parsed = new URL(url);
-  if (parsed.hostname === "github.com") {
-    return "github";
-  }
-  if (parsed.hostname === "hg.sr.ht" || parsed.hostname === "git.sr.ht") {
-    return "sourcehut";
-  }
-  if (parsed.hostname === "bitbucket.org") {
-    return "bitbucket";
-  }
-  if (parsed.hostname === "gitlab.com") {
-    return "gitlab";
-  }
-  if (parsed.hostname === "codeberg.org") {
-    return "codeberg";
-  }
-  if (parsed.hostname === "elpa.gnu.org") {
-    return "gnu elpa";
-  }
+  /* const parsed = new URL(url);
+   * if (parsed.hostname === "github.com") {
+   *   return "github";
+   * }
+   * if (parsed.hostname === "hg.sr.ht" || parsed.hostname === "git.sr.ht") {
+   *   return "sourcehut";
+   * }
+   * if (parsed.hostname === "bitbucket.org") {
+   *   return "bitbucket";
+   * }
+   * if (parsed.hostname === "gitlab.com") {
+   *   return "gitlab";
+   * }
+   * if (parsed.hostname === "codeberg.org") {
+   *   return "codeberg";
+   * }
+   * if (parsed.hostname === "elpa.gnu.org") {
+   *   return "gnu elpa";
+   * } */
 });
 
 /**
