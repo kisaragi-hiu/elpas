@@ -8,5 +8,6 @@ export default defineConfig({
   vite: {
     clearScreen: false,
     plugins: [tailwindcss()],
+    build: { minify: false },
   },
 });
