@@ -537,11 +537,18 @@ export default function PaginatedTable({
   const [actualData, setActualData] = useState<Pkg[]>(
     data === undefined ? [] : data,
   );
-  useEffect(async () => {
+  useEffect(() => {
     if (actualData.length > 0) return;
-    const res = await fetch("/packages.json");
-    setActualData((await res.json()) as Pkg[]);
+    // the useEffect body function cannot return a promise, as async functions
+    // do, so this is what must be done instead.
+    (async () => {
+      const res = await fetch("/packages.json");
+      setActualData((await res.json()) as Pkg[]);
+    })();
   });
+  if (actualData.length === 0) {
+    return <Loading />;
+  }
   // We assume this is the only component taking control over the URL search params.
   // This assumption currently holds true.
   return (
