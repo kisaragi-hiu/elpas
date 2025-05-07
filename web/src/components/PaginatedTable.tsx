@@ -542,9 +542,6 @@ export default function PaginatedTable({
     const res = await fetch("/packages.json");
     setActualData((await res.json()) as Pkg[]);
   });
-  if (actualData.length === 0) {
-    return <Loading />;
-  }
   // We assume this is the only component taking control over the URL search params.
   // This assumption currently holds true.
   return (
