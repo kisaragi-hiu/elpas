@@ -38,6 +38,7 @@ import { useState, useMemo, useEffect, useCallback } from "react";
 import clsx from "clsx";
 import { memoize } from "@std/cache/memoize";
 import { debounce } from "@std/async";
+import Loading from "$c/Loading.tsx";
 
 // HACK: a module-level variable that is visible to the sorting predicate. This
 // might be the only way to sort better matches before others.
@@ -533,11 +534,17 @@ export default function PaginatedTable({
   data?: Pkg[];
   filter?: boolean;
 }) {
-  const actualData = useMemo(() => {
-    if (data !== undefined) return data
-    const res = await fetch("/packages.json")
-    return (await res.json()) as Pkg[]
-  }, [data])
+  const [actualData, setActualData] = useState<Pkg[]>(
+    data === undefined ? [] : data,
+  );
+  useEffect(async () => {
+    if (actualData.length > 0) return;
+    const res = await fetch("/packages.json");
+    setActualData((await res.json()) as Pkg[]);
+  });
+  if (actualData.length === 0) {
+    return <Loading />;
+  }
   // We assume this is the only component taking control over the URL search params.
   // This assumption currently holds true.
   return (
