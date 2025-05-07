@@ -30,7 +30,9 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Setup Emacs
-        run: sudo apt-get install emacs-nox
+        run: |
+          sudo apt-get remove --purge man-db
+          sudo apt-get install emacs-nox
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
       - name: Build
