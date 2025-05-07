@@ -50,14 +50,16 @@ import Layout from "$l/Layout.astro";
             <div>
               <dt>Dependants</dt>
               <dd>
+                <ul class="flex gap-1 flex-wrap">
                 {dependants.length > 0
                   ? dependants.map((dependant) => (
                       // prettier-ignore
-                      <div>
+                      <li>
                         <a class="link" href={`/package/${dependant}`}>{dependant}</a>
-                      </div>
+                      </li>
                     ))
                   : "None"}
+                </ul>
               </dd>
             </div>
             <div>
