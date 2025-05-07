@@ -30,3 +30,17 @@ export const keywordPkgIndex = (() => {
   }
   return ret;
 })();
+
+/** Array of [package, dependency] arrays.
+ * This says that "package" depends on "dependency".
+ */
+export const dependencyIndex = (() => {
+  const ret: [string, string][] = [];
+  for (const pkg of packages) {
+    if (!pkg.deps) continue;
+    for (const dep of Object.keys(pkg.deps)) {
+      ret.push([pkg, dep]);
+    }
+  }
+  return ret;
+})();

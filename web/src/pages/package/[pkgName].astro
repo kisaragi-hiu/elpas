@@ -1,6 +1,6 @@
 ---
 import { archivePkgUrl } from "$data/schema.ts";
-import { pkgNameIndex, keywordPkgIndex } from "$data/data.ts";
+import { pkgNameIndex, keywordPkgIndex, dependencyIndex } from "$data/data.ts";
 const { pkgName } = Astro.params;
 export function getStaticPaths() {
   return Object.entries(pkgNameIndex).flatMap(([name, _pkgs]) => ({
@@ -9,6 +9,10 @@ export function getStaticPaths() {
 }
 
 const pkgs = pkgNameIndex[pkgName] ?? [];
+
+const dependants = dependencyIndex
+  .filter(([dependant, dependency]) => dependency === pkgName)
+  .map(([dependant, _dependency]) => dependant)
 
 import Layout from "$l/Layout.astro";
 ---
@@ -42,6 +46,19 @@ import Layout from "$l/Layout.astro";
             <div>
               <dt>Version</dt>
               <dd>{pkg.ver.join(".")}</dd>
+            </div>
+            <div>
+              <dt>Dependants</dt>
+              <dd>
+                {dependants.length > 0
+                  ? dependants.map((dependant) => (
+                      <div>
+                        // prettier-ignore
+                        <a class="link" href={`/package/${dependant}`}>{dependant}</a>
+                      </div>
+                    ))
+                  : "None"}
+              </dd>
             </div>
             <div>
               <dt>Dependencies</dt>
