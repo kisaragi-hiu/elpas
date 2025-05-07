@@ -530,14 +530,19 @@ export default function PaginatedTable({
   data,
   filter = true,
 }: {
-  data: Pkg[];
+  data?: Pkg[];
   filter?: boolean;
 }) {
+  const actualData = useMemo(() => {
+    if (data !== undefined) return data
+    const res = await fetch("/packages.json")
+    return (await res.json()) as Pkg[]
+  }, [data])
   // We assume this is the only component taking control over the URL search params.
   // This assumption currently holds true.
   return (
     <NuqsAdapter>
-      <TableBody data={data} filter={filter}></TableBody>
+      <TableBody data={actualData} filter={filter}></TableBody>
     </NuqsAdapter>
   );
 }
