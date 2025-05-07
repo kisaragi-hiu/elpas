@@ -52,8 +52,8 @@ import Layout from "$l/Layout.astro";
               <dd>
                 {dependants.length > 0
                   ? dependants.map((dependant) => (
+                      // prettier-ignore
                       <div>
-                        // prettier-ignore
                         <a class="link" href={`/package/${dependant}`}>{dependant}</a>
                       </div>
                     ))

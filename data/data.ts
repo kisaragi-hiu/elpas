@@ -39,7 +39,7 @@ export const dependencyIndex = (() => {
   for (const pkg of packages) {
     if (!pkg.deps) continue;
     for (const dep of Object.keys(pkg.deps)) {
-      ret.push([pkg, dep]);
+      ret.push([pkg.name, dep]);
     }
   }
   return ret;
