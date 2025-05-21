@@ -31,6 +31,14 @@ export const keywordPkgIndex = (() => {
   return ret;
 })();
 
+// mapping keywords to package names, deduplicating the same package on
+// different archives
+export const keywordPkgNameIndex = (() => {
+  const entries = Object.entries(keywordPkgIndex);
+  const mapped = entries.map((k, v) => [k, [...new Set(v)]]);
+  return mapped;
+})();
+
 /** Array of [package, dependency] arrays.
  * This says that "package" depends on "dependency".
  */
