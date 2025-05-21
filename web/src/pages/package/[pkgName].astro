@@ -52,12 +52,12 @@ import Layout from "$l/Layout.astro";
               <dd>
                 <ul class="flex gap-1 flex-wrap">
                 {dependants.length > 0
-                  ? dependants.map((dependant) => (
+                  ? dependants.map((dependant, i) => (
                       // prettier-ignore
                       <li>
                         <span>
                           <a class="link" href={`/package/${dependant}`}>{dependant}</a
-                           ><span>, </span>
+                           >{i < (dependants.length - 1) && <span>, </span>}
                         </span>
                       </li>
                     ))
