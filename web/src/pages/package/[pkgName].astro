@@ -55,7 +55,10 @@ import Layout from "$l/Layout.astro";
                   ? dependants.map((dependant) => (
                       // prettier-ignore
                       <li>
-                        <a class="link" href={`/package/${dependant}`}>{dependant}</a>
+                        <span>
+                          <a class="link" href={`/package/${dependant}`}>{dependant}</a
+                           ><span>, </span>
+                        </span>
                       </li>
                     ))
                   : "None"}
