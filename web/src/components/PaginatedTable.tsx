@@ -437,7 +437,7 @@ function TableBody({ data, filter = true }: { data: Pkg[]; filter?: boolean }) {
           </div>
           <div className="flex flex-wrap space-x-2">
             <button
-              className="btn btn-style p-1"
+              className="btn btn-style px-2 py-0"
               onClick={() => {
                 setArchiveFiltering(
                   Object.fromEntries(
