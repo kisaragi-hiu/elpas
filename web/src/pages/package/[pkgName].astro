@@ -32,7 +32,7 @@ import Layout from "$l/Layout.astro";
       return (
         <section class="section my-4">
           <h3 class="">
-            {pkg.name} ::{" "}
+            <span class="font-bold">{pkg.name}</span> ::{" "}
             {urlOnArchive ? (
               <a class="link" target="_blank" href={urlOnArchive}>
                 {pkg.archive}
