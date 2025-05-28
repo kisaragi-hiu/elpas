@@ -30,7 +30,7 @@ import Layout from "$l/Layout.astro";
     pkgs.map((pkg) => {
       const urlOnArchive = archivePkgUrl(pkg.archive, pkg.name, pkg);
       return (
-        <section class="section my-4 border-b border-black">
+        <section class="section my-4 color-bg-secondary p-4 rounded">
           <h3 class="">
             <span class="font-bold">{pkg.name}</span> ::{" "}
             {urlOnArchive ? (
