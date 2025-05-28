@@ -175,7 +175,49 @@ const pkg = z.object({
   url: z.optional(url),
 });
 
+const multiPkg = z.object({
+  name: z.string(),
+  summary: z.string(),
+  archives: z.array(z.string()),
+  vers: z.array(versionList),
+  deps: z.union([z.null(), z.array(deps)]),
+  downloads: z.optional(z.array(z.number().int())),
+  maintainers: z.optional(z.array(z.array(z.string()))),
+  authors: z.optional(z.array(z.array(z.string()))),
+  keywords: z.optional(z.array(z.array(z.string()))),
+  commit: z.optional(z.array(z.string())),
+  /** The URL written in the main file itself */
+  url: z.optional(z.array(url)),
+});
+
+// TODO: this needs lodash
+function allEqual(arr: any[], value: any): boolean {
+  for (const val of arr) {
+    if (!isEqual(val, value)) return false;
+  }
+  return true;
+}
+
+// TODO: utilize this in package pages
+/**
+ * Merge `pkgs` into one MultiPkg object.
+ */
+function mergePkg(...pkgs: Pkg[]) {
+  return {
+    name: pkgs[0].name,
+    summary: pkgs[0].summary,
+    archives: pkgs.map((p) => p.archive),
+    vers: pkgs.map((p) => p.ver),
+    deps: pkgs.map((p) => p.deps),
+    downloads: pkgs.map((p) => p.downloads),
+    commit: pkgs.map((p) => p.commit),
+    url: pkgs.map((p) => p.url),
+    keywords: pkgs.map((p) => p.keywords),
+  };
+}
+
 export type Pkg = z.infer<typeof pkg>;
+export type MultiPkg = z.infer<typeof multiPkg>;
 export const combined = z.object({
   collectedDate: z.coerce.date(),
   packages: z.array(pkg),
