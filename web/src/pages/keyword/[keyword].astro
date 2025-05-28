@@ -31,7 +31,7 @@ import Layout from "$l/Layout.astro";
     </div>
   </section>
   <section class="section">
-    <PaginatedTable data={pkgs} client:only="react" filter={false}>
+    <PaginatedTable data={pkgs} client:only="react" filter={true}>
       <Loading slot="fallback" />
     </PaginatedTable>
   </section>
