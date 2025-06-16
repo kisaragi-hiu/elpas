@@ -20,3 +20,10 @@ make dev
 #+end_src
 
 Which runs =bun install=, goes into =web/=, and runs the Astro dev server.
+
+** Build
+
+#+begin_src sh
+make json
+make build
+#+end_src
