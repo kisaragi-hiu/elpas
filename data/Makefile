@@ -30,4 +30,5 @@ cache/epkg.sql:
 # SQLite database for read
 cache/epkgs.sqlite: cache/epkg.sql
 	rm -f cache/epkgs.sqlite
-	sqlite3 cache/epkgs.sqlite '.read cache/epkg.sql'
+	# sqlite3 cache/epkgs.sqlite '.read cache/epkg.sql'
+	bun load-epkgs.ts
