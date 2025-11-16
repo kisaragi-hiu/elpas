@@ -98,7 +98,7 @@ const melpas = {
     recipes: melpaRecipesJson.parse(
       await getJson(
         "https://stable.melpa.org/recipes.json",
-        "melpa-recipes.json",
+        "melpa-stable-recipes.json",
       ),
     ),
     downloads: melpaDownloadCountsJson.parse(
