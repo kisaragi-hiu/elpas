@@ -10,6 +10,7 @@ Browser interface for searching for Emacs packages.
 ** Data sources
 
 - MELPA :: MELPA has JSON for its package list (used by its frontend) so this is simple.
+- [[https://celpa.conao3.com/][CELPA]] :: CELPA is MELPA-like and provides JSON package list in the same format.
 - Other ELPAs :: the ELPA =archive-contents= format is… Emacs Lisp S-expressions. Reasonable given its main use. But this means we have to run Emacs to process it at some point. It's far better to do this at build time, of course.
 - emacsmirror :: Currently I'm reading the list of builtin packages from emacsmirror.
 

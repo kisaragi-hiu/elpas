@@ -61,7 +61,23 @@ async function getJson(url: string, cacheName?: string) {
   return JSON.parse(text);
 }
 
+/** MELPA-style package repositories. */
 const melpas = {
+  celpa: {
+    archive: melpaArchiveJson.parse(
+      await getJson(
+        "https://celpa.conao3.com/archive.json",
+        "celpa-archive.json",
+      ),
+    ),
+    recipes: melpaRecipesJson.parse(
+      await getJson(
+        "https://celpa.conao3.com/recipes.json",
+        "celpa-recipes.json",
+      ),
+    ),
+    downloads: undefined,
+  },
   melpa: {
     // MELPA has 3 files: archive.json, recipes.json, and download_counts.json.
     // - archive.json has most of the info we need.
@@ -159,7 +175,7 @@ function insertMelpas() {
         deps: deps,
         summary: desc,
       };
-      if (downloads[pkgName]) {
+      if (downloads && downloads[pkgName]) {
         newPkg.downloads = downloads[pkgName];
       }
       if (props.maintainers) newPkg.maintainers = props.maintainers;
