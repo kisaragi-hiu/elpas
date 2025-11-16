@@ -12,7 +12,7 @@ const pkgs = pkgNameIndex[pkgName] ?? [];
 
 const dependants = dependencyIndex
   .filter(([dependant, dependency]) => dependency === pkgName)
-  .map(([dependant, _dependency]) => dependant)
+  .map(([dependant, _dependency]) => dependant);
 
 import Layout from "$l/Layout.astro";
 ---
@@ -30,7 +30,7 @@ import Layout from "$l/Layout.astro";
     pkgs.map((pkg) => {
       const urlOnArchive = archivePkgUrl(pkg.archive, pkg.name, pkg);
       return (
-        <section class="section my-4 color-bg-secondary p-4 rounded">
+        <section class="section color-bg-secondary my-4 rounded p-4">
           <h3 class="">
             <span class="font-bold">{pkg.name}</span> ::{" "}
             {urlOnArchive ? (
@@ -48,23 +48,23 @@ import Layout from "$l/Layout.astro";
               <dd>{pkg.ver.join(".")}</dd>
             </div>
             <div>
-              {dependants.length === 0
-              ?<dt>Needed by</dt>
-              :<dt>Needed by ({dependants.length})</dt>
-              }
+              {dependants.length === 0 ? (
+                <dt>Needed by</dt>
+              ) : (
+                <dt>Needed by ({dependants.length})</dt>
+              )}
               <dd>
-                <ul class="flex gap-1 flex-wrap">
-                {dependants.length > 0
-                  ? dependants.map((dependant, i) => (
-                      // prettier-ignore
-                      <li>
+                <ul class="flex flex-wrap gap-1">
+                  {dependants.length > 0
+                    ? dependants.map((dependant, i) =>
+                        // prettier-ignore
+                        <li>
                         <span>
-                          <a class="link" href={`/package/${dependant}`}>{dependant}</a
-                           >{i < (dependants.length - 1) && <span>, </span>}
+                          <a class="link" href={`/package/${dependant}`}>{dependant}</a>{i < (dependants.length - 1) && <span>, </span>}
                         </span>
-                      </li>
-                    ))
-                  : "None"}
+                      </li>,
+                      )
+                    : "None"}
                 </ul>
               </dd>
             </div>
