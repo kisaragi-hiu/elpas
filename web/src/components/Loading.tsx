@@ -17,9 +17,9 @@ export default function Loading() {
 
      Modifications: remove inbuilt CSS animation in favor of tailwind's animate-spin class. */
   return (
-    <div class="flex w-full justify-center">
+    <div className="flex w-full justify-center">
       <svg
-        class="animate-spin"
+        className="animate-spin"
         fill="currentColor"
         width="24"
         height="24"
