@@ -1,6 +1,11 @@
 ---
 import "$src/styles/global.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
+
+export interface Props {
+  title: string | undefined;
+}
+const { title } = Astro.props;
 ---
 
 <!doctype html>
@@ -10,7 +15,7 @@ import "bootstrap-icons/font/bootstrap-icons.css";
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
-    <title>ELPAs list</title>
+    <title>{title ? `${title} · ELPAs list` : "ELPAs list"}</title>
     <script is:inline defer src="https://assets.onedollarstats.com/stonks.js"
     ></script>
   </head>
